@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zettelkasten</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+      color: #000000;
+      font-family: sans-serif;
+    }
+
+    #graph {
+      width: 100%;
+      height: 100%;
+    }
+
+    #overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.92);
+      z-index: 10;
+    }
+
+    #overlay.hidden {
+      display: none;
+    }
+
+    .panel {
+      position: fixed;
+      z-index: 5;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 10px;
+      backdrop-filter: blur(8px);
+      padding: 12px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #000000;
+    }
+
+    #info-panel {
+      top: 16px;
+      left: 16px;
+      max-width: 280px;
+    }
+
+    #info-panel h1 {
+      font-size: 15px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    #info-panel p {
+      color: #333333;
+    }
+
+    .spinner {
+      width: 42px;
+      height: 42px;
+      border: 3px solid rgba(0, 0, 0, 0.12);
+      border-top-color: #333333;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error {
+      max-width: 520px;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .error code {
+      background: rgba(0, 0, 0, 0.06);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #note-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .note-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+    }
+
+    .note-modal-panel {
+      position: relative;
+      z-index: 1;
+      width: min(720px, 100%);
+      max-height: 80vh;
+      overflow: auto;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      padding: 24px 28px 28px;
+    }
+
+    #note-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.06);
+      color: #333333;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    #note-modal-close:hover {
+      background: rgba(0, 0, 0, 0.12);
+    }
+
+    #note-modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-right: 36px;
+    }
+
+    .note-content {
+      font-size: 14px;
+      line-height: 1.65;
+      color: #222222;
+    }
+
+    .note-content h1,
+    .note-content h2,
+    .note-content h3 {
+      margin: 1.2em 0 0.5em;
+      line-height: 1.3;
+    }
+
+    .note-content h1 { font-size: 1.5em; }
+    .note-content h2 { font-size: 1.25em; }
+    .note-content h3 { font-size: 1.1em; }
+
+    .note-content p,
+    .note-content ul,
+    .note-content ol,
+    .note-content blockquote {
+      margin: 0.75em 0;
+    }
+
+    .note-content ul,
+    .note-content ol {
+      padding-left: 1.5em;
+    }
+
+    .note-content code {
+      background: rgba(0, 0, 0, 0.06);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .note-content pre {
+      background: rgba(0, 0, 0, 0.05);
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 0.75em 0;
+    }
+
+    .note-content pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .note-content blockquote {
+      border-left: 3px solid rgba(0, 0, 0, 0.2);
+      padding-left: 12px;
+      color: #444444;
+    }
+
+    .note-content a.wiki-link {
+      color: #000000;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .note-content a.wiki-link:hover {
+      color: #333333;
+    }
+
+    .note-content .note-missing {
+      color: #666666;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div id="overlay-content">
+      <div class="spinner"></div>
+      <div>Lade Graph-Daten…</div>
+    </div>
+  </div>
+
+  <div id="info-panel" class="panel hidden">
+    <h1>Worlding</h1>
+    <p id="stats">–</p>
+    <p style="margin-top: 8px; font-size: 12px;">Maus: drehen · Scroll: zoomen · Rechtsklick: schwenken · Klick: Notiz öffnen</p>
+  </div>
+
+  <div id="note-modal" class="hidden">
+    <div class="note-modal-backdrop"></div>
+    <div class="note-modal-panel">
+      <button id="note-modal-close" type="button" aria-label="Schließen">×</button>
+      <h2 id="note-modal-title"></h2>
+      <div id="note-modal-body" class="note-content"></div>
+    </div>
+  </div>
+
+  <div id="graph"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three-spritetext@1.8.2/dist/three-spritetext.min.js"></script>
+  <script src="https://unpkg.com/3d-force-graph@1.73.0/dist/3d-force-graph.min.js"></script>
+  <script>
+    const overlay = document.getElementById('overlay');
+    const overlayContent = document.getElementById('overlay-content');
+    const infoPanel = document.getElementById('info-panel');
+    const statsEl = document.getElementById('stats');
+    const noteModal = document.getElementById('note-modal');
+    const noteModalTitle = document.getElementById('note-modal-title');
+    const noteModalBody = document.getElementById('note-modal-body');
+    const noteModalClose = document.getElementById('note-modal-close');
+    const noteModalBackdrop = noteModal.querySelector('.note-modal-backdrop');
+
+    let graphNodes = [];
+    let nodeLookup = new Map();
+
+    const WIKI_LINK_PATTERN = /\[\[([^\]|#^]+)(?:\|([^\]]*))?(?:#[^\]]*)?(?:\^[^\]]*)?\]\]/g;
+
+    function normalizeKey(value) {
+      return value.trim().toLowerCase();
+    }
+
+    function buildNodeLookup(nodes) {
+      const lookup = new Map();
+      nodes.forEach((node) => {
+        lookup.set(normalizeKey(node.id), node);
+        lookup.set(normalizeKey(node.title), node);
+      });
+      return lookup;
+    }
+
+    function resolveWikiTarget(target) {
+      return nodeLookup.get(normalizeKey(target)) || null;
+    }
+
+    function preprocessWikiLinks(markdown) {
+      return markdown.replace(WIKI_LINK_PATTERN, (match, target, alias) => {
+        const label = (alias || target).trim();
+        const node = resolveWikiTarget(target.trim());
+        if (node) {
+          return `[${label}](#wiki:${encodeURIComponent(node.id)})`;
+        }
+        return `<span class="note-missing">${label}</span>`;
+      });
+    }
+
+    function renderNoteBody(body) {
+      const prepared = preprocessWikiLinks(body);
+      const renderer = new marked.Renderer();
+      const defaultLink = renderer.link.bind(renderer);
+      renderer.link = (href, title, text) => {
+        if (href && href.startsWith('#wiki:')) {
+          const noteId = decodeURIComponent(href.slice(6));
+          const titleAttr = title ? ` title="${title}"` : '';
+          return `<a href="#" class="wiki-link" data-note-id="${noteId}"${titleAttr}>${text}</a>`;
+        }
+        return defaultLink(href, title, text);
+      };
+      return marked.parse(prepared, { renderer });
+    }
+
+    function openNoteModal(node) {
+      if (!node) return;
+
+      noteModalTitle.textContent = node.title;
+
+      if (!node.body) {
+        noteModalBody.innerHTML = '<p class="note-missing">Inhalt nicht verfügbar — bitte <code>process_notes.py</code> neu ausführen.</p>';
+      } else {
+        noteModalBody.innerHTML = renderNoteBody(node.body);
+      }
+
+      noteModal.classList.remove('hidden');
+      noteModalClose.focus();
+    }
+
+    function closeNoteModal() {
+      noteModal.classList.add('hidden');
+      noteModalBody.innerHTML = '';
+    }
+
+    noteModalClose.addEventListener('click', closeNoteModal);
+    noteModalBackdrop.addEventListener('click', closeNoteModal);
+    noteModalBody.addEventListener('click', (event) => {
+      const link = event.target.closest('a.wiki-link');
+      if (!link) return;
+      event.preventDefault();
+      const noteId = link.dataset.noteId;
+      const targetNode = graphNodes.find((n) => n.id === noteId);
+      if (targetNode) {
+        openNoteModal(targetNode);
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !noteModal.classList.contains('hidden')) {
+        closeNoteModal();
+      }
+    });
+
+    function showError(message) {
+      overlay.classList.remove('hidden');
+      overlayContent.innerHTML = `
+        <div class="error">
+          <h2 style="margin-bottom: 12px;">Daten konnten nicht geladen werden</h2>
+          <p>${message}</p>
+          <p style="margin-top: 16px; color: #333333;">
+            Führe zuerst aus:<br>
+            <code>python process_notes.py --vault /pfad/zum/vault</code>
+          </p>
+        </div>
+      `;
+    }
+
+    function prepareGraphData(data) {
+      const xs = data.nodes.map((n) => n.x);
+      const ys = data.nodes.map((n) => n.y);
+      const zs = data.nodes.map((n) => n.z);
+      const span = Math.max(
+        Math.max(...xs) - Math.min(...xs),
+        Math.max(...ys) - Math.min(...ys),
+        Math.max(...zs) - Math.min(...zs),
+        1,
+      );
+      const TARGET_SPAN = 300;
+      const scale = TARGET_SPAN / span;
+
+      const nodes = data.nodes.map((node) => {
+        const x = node.x * scale;
+        const y = node.y * scale;
+        const z = node.z * scale;
+        return { ...node, x, y, z, fx: x, fy: y, fz: z };
+      });
+
+      return { nodes, links: data.links };
+    }
+
+    function fitGraphToView(Graph) {
+      requestAnimationFrame(() => {
+        Graph.zoomToFit(400, 80);
+      });
+    }
+
+    function nodeRadius(val, relSize) {
+      return Math.cbrt(val) * relSize;
+    }
+
+    function createLabelSprite(node, labelTextHeight, labelOffsetY) {
+      const sprite = new SpriteText(node.title);
+      sprite.material.depthWrite = false;
+      sprite.material.transparent = true;
+      sprite.color = '#000000';
+      sprite.textHeight = labelTextHeight;
+      sprite.fontFace = 'sans-serif';
+      sprite.center.y = 0;
+      sprite.position.y = labelOffsetY;
+      node.__labelSprite = sprite;
+      return sprite;
+    }
+
+    function updateLabelVisibility(Graph, graphData, nearDistance, farDistance, minOpacity) {
+      const camPos = Graph.camera().position;
+      const nodePos = new THREE.Vector3();
+
+      graphData.nodes.forEach((node) => {
+        const sprite = node.__labelSprite;
+        if (!sprite) return;
+
+        nodePos.set(node.x, node.y, node.z);
+        const dist = camPos.distanceTo(nodePos);
+
+        let opacity = 1;
+        if (dist > nearDistance) {
+          const t = Math.min(1, (dist - nearDistance) / (farDistance - nearDistance));
+          opacity = 1 - t * (1 - minOpacity);
+        }
+        opacity = Math.max(minOpacity, Math.min(1, opacity));
+
+        sprite.visible = true;
+        sprite.material.opacity = opacity;
+      });
+    }
+
+    function linkTouchesNode(link, node) {
+      if (!node) return false;
+      const sourceId = link.source.id ?? link.source;
+      const targetId = link.target.id ?? link.target;
+      return sourceId === node.id || targetId === node.id;
+    }
+
+    function initGraph(graphData, meta) {
+      graphNodes = graphData.nodes;
+      nodeLookup = buildNodeLookup(graphNodes);
+
+      const nodeVal = 0.25;
+      const nodeValHover = 0.5;
+      const nodeRelSize = 4;
+      const labelTextHeight = 4;
+      const labelOffsetY = nodeRadius(nodeValHover, nodeRelSize) + labelTextHeight * 0.5 + 1;
+      const labelNearDistance = 360;
+      const labelFarDistance = 540;
+      const labelMinOpacity = 0.25;
+      const linkColorDefault = 'rgba(0, 0, 0, 0.25)';
+      const linkColorHighlight = 'rgba(0, 0, 0, 0.95)';
+      let hoveredNode = null;
+
+      const Graph = ForceGraph3D()(document.getElementById('graph'))
+        .backgroundColor('#ffffff')
+        .cooldownTicks(1)
+        .graphData(graphData)
+        .nodeThreeObject((node) => createLabelSprite(node, labelTextHeight, labelOffsetY))
+        .nodeThreeObjectExtend(true)
+        .nodeVal(nodeVal)
+        .nodeRelSize(nodeRelSize)
+        .nodeResolution(48)
+        .nodeColor(() => '#000000')
+        .nodeOpacity(1)
+        .linkColor((link) => (
+          linkTouchesNode(link, hoveredNode) ? linkColorHighlight : linkColorDefault
+        ))
+        .linkWidth((link) => (linkTouchesNode(link, hoveredNode) ? 1.2 : 0.6))
+        .linkOpacity(1)
+        .enableNodeDrag(false)
+        .onNodeHover((node) => {
+          hoveredNode = node || null;
+          graphData.nodes.forEach((n) => { n.__hover = false; });
+          if (node) {
+            node.__hover = true;
+          }
+          Graph.nodeVal((n) => (n.__hover ? nodeValHover : nodeVal));
+          Graph.linkColor(Graph.linkColor());
+          Graph.linkWidth(Graph.linkWidth());
+        })
+        .onNodeClick((node) => openNoteModal(node));
+
+      Graph.d3Force('charge', null);
+      Graph.d3Force('center', null);
+
+      const linkForce = Graph.d3Force('link');
+      if (linkForce) {
+        linkForce.distance(80).strength(0);
+      }
+
+      let labelVisibilityRaf = null;
+      function scheduleLabelVisibilityUpdate() {
+        if (labelVisibilityRaf) cancelAnimationFrame(labelVisibilityRaf);
+        labelVisibilityRaf = requestAnimationFrame(() => {
+          labelVisibilityRaf = null;
+          updateLabelVisibility(Graph, graphData, labelNearDistance, labelFarDistance, labelMinOpacity);
+        });
+      }
+
+      Graph.controls().addEventListener('change', scheduleLabelVisibilityUpdate);
+
+      const controls = Graph.controls();
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.12;
+
+      fitGraphToView(Graph);
+      scheduleLabelVisibilityUpdate();
+
+      statsEl.textContent = `${meta.nodeCount} Notizen · ${meta.linkCount} Links`;
+      infoPanel.classList.remove('hidden');
+      overlay.classList.add('hidden');
+    }
+
+    fetch('./data.json')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('data.json nicht gefunden. Bitte process_notes.py ausführen.');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (!data.nodes || !data.links) {
+          throw new Error('Ungültiges JSON-Format in data.json.');
+        }
+        initGraph(prepareGraphData(data), data.meta || {
+          nodeCount: data.nodes.length,
+          linkCount: data.links.length,
+          model: 'unbekannt',
+        });
+      })
+      .catch((error) => {
+        showError(error.message);
+      });
+  </script>
+</body>
+</html>
