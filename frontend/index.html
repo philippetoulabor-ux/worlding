@@ -2,6 +2,16 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <script>
+    (function () {
+      const p = location.pathname;
+      const href =
+        p === "/worlding" || p.startsWith("/worlding/") ? "/worlding/" : "./";
+      const base = document.createElement("base");
+      base.href = href;
+      document.head.appendChild(base);
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zettelkasten</title>
   <link rel="stylesheet" href="chat.css">
