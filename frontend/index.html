@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zettelkasten</title>
+  <link rel="stylesheet" href="chat.css">
   <style>
     * {
       box-sizing: border-box;
@@ -222,6 +223,34 @@
       color: #666666;
       font-style: italic;
     }
+
+    .note-content img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0.75em 0;
+      border-radius: 6px;
+    }
+
+    .note-content .youtube-embed {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      margin: 0.75em 0;
+      border-radius: 6px;
+      background: #000000;
+    }
+
+    .note-content .youtube-embed iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
   </style>
 </head>
 <body>
@@ -235,7 +264,6 @@
   <div id="info-panel" class="panel hidden">
     <h1>Worlding</h1>
     <p id="stats">–</p>
-    <p style="margin-top: 8px; font-size: 12px;">Maus: drehen · Scroll: zoomen · Rechtsklick: schwenken · Klick: Notiz öffnen</p>
   </div>
 
   <div id="note-modal" class="hidden">
@@ -248,6 +276,19 @@
   </div>
 
   <div id="graph"></div>
+
+  <button id="chat-fab" type="button" aria-label="Chat öffnen">💬</button>
+  <div id="chat-panel" class="hidden">
+    <div id="chat-header">
+      Zettelkasten-Chat
+      <p>Fragen zu den Notizen stellen</p>
+    </div>
+    <div id="chat-messages"></div>
+    <form id="chat-form">
+      <textarea id="chat-input" rows="1" placeholder="Frage stellen…" maxlength="2000"></textarea>
+      <button id="chat-send" type="submit">Senden</button>
+    </form>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
 
@@ -267,6 +308,22 @@
 
     let graphNodes = [];
     let nodeLookup = new Map();
+    let graphRef = null;
+    let sourceHighlightIds = new Set();
+
+    window.openNoteById = function (noteId) {
+      const node = graphNodes.find((n) => n.id === noteId);
+      if (node) openNoteModal(node);
+    };
+
+    window.highlightChatSources = function (ids) {
+      sourceHighlightIds = new Set(ids);
+      if (graphRef) {
+        graphRef.nodeColor((node) => (
+          sourceHighlightIds.has(node.id) ? '#555555' : '#000000'
+        ));
+      }
+    };
 
     const WIKI_LINK_PATTERN = /\[\[([^\]|#^]+)(?:\|([^\]]*))?(?:#[^\]]*)?(?:\^[^\]]*)?\]\]/g;
 
@@ -298,15 +355,74 @@
       });
     }
 
+    const YOUTUBE_URL_PATTERN = /(?:youtube\.com\/(?:watch\?(?:[^#\s]*&)?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+    function parseYoutubeStart(value) {
+      if (!value) return null;
+      if (/^\d+$/.test(value)) return parseInt(value, 10);
+      const secondsMatch = value.match(/^(\d+)s$/);
+      if (secondsMatch) return parseInt(secondsMatch[1], 10);
+      const parts = value.match(/(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?/);
+      if (!parts || !parts[0]) return null;
+      const hours = parseInt(parts[1] || '0', 10);
+      const minutes = parseInt(parts[2] || '0', 10);
+      const seconds = parseInt(parts[3] || '0', 10);
+      const total = hours * 3600 + minutes * 60 + seconds;
+      return total > 0 ? total : null;
+    }
+
+    function parseYoutubeUrl(url) {
+      if (!url) return null;
+      const match = url.match(YOUTUBE_URL_PATTERN);
+      if (!match) return null;
+      let start = null;
+      try {
+        const parsed = new URL(url);
+        start = parseYoutubeStart(parsed.searchParams.get('t') || parsed.searchParams.get('start'));
+      } catch (_) {
+        /* relative or malformed URL */
+      }
+      return { videoId: match[1], start };
+    }
+
+    function renderYoutubeEmbed({ videoId, start }) {
+      const startQuery = start != null ? `?start=${start}` : '';
+      return (
+        `<div class="youtube-embed">`
+        + `<iframe src="https://www.youtube-nocookie.com/embed/${videoId}${startQuery}"`
+        + ` title="YouTube video"`
+        + ` allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"`
+        + ` allowfullscreen loading="lazy"></iframe>`
+        + `</div>`
+      );
+    }
+
     function renderNoteBody(body) {
       const prepared = preprocessWikiLinks(body);
       const renderer = new marked.Renderer();
       const defaultLink = renderer.link.bind(renderer);
+      const defaultImage = renderer.image.bind(renderer);
+      renderer.image = (href, title, text) => {
+        if (href && href.startsWith('assets/')) {
+          const alt = (text || '').replace(/"/g, '&quot;');
+          const titleAttr = title ? ` title="${title.replace(/"/g, '&quot;')}"` : '';
+          return `<img src="${href}" alt="${alt}"${titleAttr} loading="lazy" decoding="async">`;
+        }
+        return defaultImage(href, title, text);
+      };
       renderer.link = (href, title, text) => {
         if (href && href.startsWith('#wiki:')) {
           const noteId = decodeURIComponent(href.slice(6));
           const titleAttr = title ? ` title="${title}"` : '';
           return `<a href="#" class="wiki-link" data-note-id="${noteId}"${titleAttr}>${text}</a>`;
+        }
+        const youtube = parseYoutubeUrl(href);
+        if (youtube) {
+          return renderYoutubeEmbed(youtube);
+        }
+        if (href && /\.pdf($|\?)/i.test(href)) {
+          const titleAttr = title ? ` title="${title}"` : '';
+          return `<a href="${href}" target="_blank" rel="noopener"${titleAttr}>${text}</a>`;
         }
         return defaultLink(href, title, text);
       };
@@ -487,6 +603,8 @@
         })
         .onNodeClick((node) => openNoteModal(node));
 
+      graphRef = Graph;
+
       Graph.d3Force('charge', null);
       Graph.d3Force('center', null);
 
@@ -539,5 +657,6 @@
         showError(error.message);
       });
   </script>
+  <script src="chat.js"></script>
 </body>
 </html>

@@ -1,0 +1,423 @@
+{
+  "nodes": [
+    {
+      "id": "Neu",
+      "title": "Neu",
+      "body": "{{date}} {{time}}\n\ntags: \n\n\n**remember to update!**\n\ncd \"/Users/philippe/vb database visualisation\"\n./sync-and-push.sh\n\n##### Links\n+ ",
+      "x": -36.2751,
+      "y": -19.6599,
+      "z": 6.5388
+    },
+    {
+      "id": "Designsystem",
+      "title": "Designsystem",
+      "body": "2026-06-24 15:57\n\ntags: [Worlding](#wiki:Worlding)\n\n\n\n\nhttps://en.wikipedia.org/wiki/Design_system\n\nDie Wikipedia Definition bezieht sich ausschliesslich auf Designsysteme im Kontext von Software Engineering... aber Designsysteme können ja viel breiter betrachtet werden.. die Erfindung von Schrift, das Konzept Rad/Rolle, der Tisch,... \n\nWas sind ein paar interessante Designsysteme die ich mir als Beispiele anschauen kann?\n\n- [Tisch](#wiki:Tisch)\n- [Braun](#wiki:Braun)\n- [Bauhaus](#wiki:Bauhaus)\n- [UI](#wiki:UI) (im Kontext digitaler Produkte)\n\n\n\n#### Wie entwickle ich ein Designsystem?\n\n\nwie baue ich ein designsystem?\nDesignsystem als Parameter für ai beim erstellen von Inhalten.\nvielleicht anfangen mit einem simplen system für das erstellen von präsentationen?!\nWelche Parameter gibt es?\n\tFarben\n\tRadien\n\tFonts (und alles was damit zusammenhängt wie Textgrößen usw.)\n\tLinienstärke\n\t...\nWie eng will/muss ich meine Parameter setzen?\n\tBeispiel: Eine Reihe von möglichen Hintergrundbildern/ Shadern aus denen der agent auswählen kann vs Hintergründe werden jedes mal neu generiert - der agent nimmt sich die Hintergrundbilder/ Shader usw nur als ästhetische/funktionale Guideline\n\t-> Kombinationen von festen Vorgaben vs 'freies' generieren anhand von Beispielen  \n",
+      "x": 7.2635,
+      "y": -0.5493,
+      "z": -4.2438
+    },
+    {
+      "id": "Worlding",
+      "title": "WORLDING",
+      "body": "2026-06-25 10:53\n\ntags: \n\n\n# WORLDING\n\n[![](assets/home17a.webp)](assets/home17a.webp)\n\n## **Worlding -** as a practice in design\n\nThere is no single, neutral, pre-given reality. Instead, there are many equally valid Worlds and they are made, not discovered. Science, art, everyday perception, music… all of them construct their Worlds through their own symbols, categories, and systems of description.\n\nAs a child, I was obsessed with basic LEGO bricks. I never wanted a pre-designed Fire Station or a Star Wars Death Star; I always preferred the simple blocks. The possibility of building anything I could imagine out of this neutral matter had a huge pull on me. My excitement didn’t come from just creating a isolated new shape out of these blocks. It came from inventing rules that transformed the space around it. I would look at the carpet in my bedroom and decide: _\"This is water, and the figures can't swim.\"_ With that one simple rule, a World was born. It provided a rich context that gave every possible new shape a set of requirements it needed to fulfill in order to hold value and have a reason to exist. My mind kept coming up with new artefacts.. bridges, boats, or houses on stilts,… all of them followed and further defined the rules and logic of this newly created reality. With every new artefact the World got easier to grasp for a person that’s not the creator. At some point playmates/collaborators can enter the picture. With the rules set, everyone could come in and develop characters, story lines and objects that inhabit that reality.\n\nThis is the essence of Worlding: creating a generative ruleset that, once established, takes on a life of its own. In some cases it can even become fully independent of its creator, functioning as an open engine that continuously can produce new artefacts, behaviors, and narratives.\n\nIn design, we can use this urge to shift our focus away from shaping isolated, individual objects. Instead, we can design rule-based, open systems. By establishing the foundational laws of a World, we allow it to take on a life of its own and evolve autonomously, through user behavior, networking or simulation. The designer no longer just shapes the final product; they design the ecosystem that allows new products to emerge.\n\nIn my bachelor project i want to develop methods that enable the process of Worlding in the context of design. My goal is to design a new World by constructing its foundational framework, setting its rules and finally producing some artefacts as examples.\n\n#### leading questions:\n\n- What are interesting examples for Worlding in the past and present (Linux Kernel, Apple, Disney, Bauhaus(as a movement), Fortnite) ?\n    \n    - What rules are they based on? How important is the inventor for the existence of the world (i.e. Walt Disney)? open source vs closed systems..\n    \n\n- How can the concept of Worlding be applied to the context of product design?\n    \n    - open source in software is not the same as a diy-instruction for how to build a chair…\n    \n\n- How to create a World?\n    \n    - What does a world need in order to exist?\n    \n    - How to build a framework for a new world?\n    \n    - Reasoning… the question of Why\n    \n\n## **creating a new World (first attempt)**\n\n[![](assets/chair-1.webp)](assets/chair-1.webp)\n\n[![](assets/chair-2.webp)](assets/chair-2.webp)\n\nFramework/Rules:\n\ntwo sheets of material stuck through each other, supporting each other to hold weight.\n\neverything else can be seen as a variable. So material, shape (i.e. of the outline), size, weight,…\n\nthis gives enormous freedom.. objects in this world could range from a 3 person sofa (with foam pillows) to a small phone stand for the desk\n\n[![](assets/quick-iterations.webp)](assets/quick-iterations.webp)\n\nGoal (does a world even need a defined goal? If yes.. why?):\n\nConsumer → Collaborator , change the dynamic from people just being consumers/customers of your product towards people being your collaborators on something new\n\n*I won’t go too much in depth about the concept of worlding in this exposee.. i put a few of my sources here!\n\n## Sources\n\n- **Cheng, Ian (2018):** _Emissary’s Guide to Worlding_. New York: Metis Publications.\n    \n    - ==[https://iancheng.com/](https://iancheng.com/)==\n    \n\n- **Goodman, Nelson (1978):** _Ways of Worldmaking_. Indianapolis: Hackett Publishing Company.\n    \n    - ==[https://monoskop.org/images/c/c5/Goodman_Nelson_Ways_of_Worldmaking_Harvester.pdf](https://monoskop.org/images/c/c5/Goodman_Nelson_Ways_of_Worldmaking_Harvester.pdf)==\n    \n\n- **Jovanovic, Damjan:** _Worldmaking Project_ (Research Platform & Concept Cabinet).\n    \n    - ==[https://worldmaking.xyz/About](https://worldmaking.xyz/About)== ==and== ==[https://worldmakingproject.substack.com/](https://worldmakingproject.substack.com/p/worldmaking)==\n    \n\n### i dont know if any of this will be useful for this project.. i still wanted to include these references and ideas\n\nMatcap editor (maybe build a online product configurator/builder? in this example its mainly about color but this could be transferred to changing shapes, material and so on)\n\n==[https://lab.julienverneaut.com/matcap-editor/](https://lab.julienverneaut.com/matcap-editor/)==\n\ni’m building a 3D environment for web (objects that i created over the years trying to find harmony and a place to coexist.. a World called /home)\n\n==[https://www.philtou.com/](https://www.philtou.com/)==\n\nGLSL ShaderLab (still a concept.. under constuction.. but plays in the same ballpark as the matcap editor with a few more variables)\n\n==[https://shaderlab-cj1gv5g5m-philippetoulabor-uxs-projects.vercel.app/](https://shaderlab-cj1gv5g5m-philippetoulabor-uxs-projects.vercel.app/)==\n\n\n##### Links\n+ [Emissary's Guide To Worlding, Ian Cheng (2018).pdf](assets/Emissary-s-Guide-To-Worlding-Ian-Cheng-2018.pdf)\n+ [Jrgensen-WALKINGWORLDING-2022.pdf](assets/Jrgensen-WALKINGWORLDING-2022.pdf)\n+ [Ways_of_Worldmaking_Goodman_Nelson_Harvester.pdf](assets/Ways_of_Worldmaking_Goodman_Nelson_Harvester.pdf)\n+ ",
+      "x": 30.4878,
+      "y": 8.2628,
+      "z": -3.5381
+    },
+    {
+      "id": "Agents and LLMs",
+      "title": "Agents and LLMs",
+      "body": "2026-06-23 17:34\n\ntags: [Worlding](#wiki:Worlding), [Designsystem](#wiki:Designsystem), [digital architecture](#wiki:digital%20architecture), [OS](#wiki:OS), [UI](#wiki:UI)\n\nWas soll mein agent alles können?\n\t1. Informationen aus meiner Datenbank smart suchen und präsentieren\n\t2. Pdfs und andere Dateien (Texte) zusammenfassen und Kernpunkte herausarbeiten\n1. Wie viel soll die zwischen mich und meine Datenbank geschaltete LLM dazugeben? 'nur' in die Datenbank schauen und passende Inhalte präsentieren? oder ein Stufe komplexer, die passenden Inhalte nur als Informationsquelle nutzen und 'selber denken'? hilft mir das selber denken oder ist es nur eine den inhalt verfälschende und im schlimmsten fall falsch wiedergebende Instanz?\n\n\n[RAG - Retrieval-augmented generation](#wiki:RAG%20-%20Retrieval-augmented%20generation)",
+      "x": -13.2997,
+      "y": -29.9409,
+      "z": -9.3971
+    },
+    {
+      "id": "BRAUN DESIGN STORY",
+      "title": "BRAUN DESIGN STORY",
+      "body": "2026-06-24 17:24\n\ntags: [Braun](#wiki:Braun), [Dieter Rams für Braun](#wiki:Dieter%20Rams%20f%C3%BCr%20Braun)\n\n\n[https://www.youtube.com/watch?v=RVmQMe45-mY](https://www.youtube.com/watch?v=RVmQMe45-mY)\n\n\ngemini generated summary\n\nDie Doku erzählt die **Geschichte von Braun als Designpionier** im Nachkriegsdeutschland und wie aus einer mittelgroßen Radio- und Haushaltsgerätefirma eine weltweit prägende Designmarke wurde.\n\nAusgangspunkt ist die Aufbruchsstimmung nach 1945 und das Erbe von Firmengründer Max Braun, der schon vor dem Krieg moderne Tonmöbel und Radios gebaut hatte. Nach Zerstörung im Krieg übernehmen seine Söhne Erwin und Artur Braun das Unternehmen, modernisieren es und nutzen den Erfolg des elektrischen Rasierers als finanzielles Rückgrat, um gestalterisch radikale Experimente zu wagen.\n\nDie Doku zeigt dann den Bruch mit der bis dahin üblichen „Goldlametta‑Radio“-Ästhetik: Statt schwerer, dekorierter Möbel setzt Braun auf „weniger, aber besser“ – klare Formen, Funktionalität, Ehrlichkeit. Schlüssel dafür ist die Zusammenarbeit mit der Hochschule für Gestaltung Ulm (Otl Aicher, Hans Gugelot u.a.), die das Erscheinungsbild von Produkten, Architektur, Messeauftritten und Grafik ganzheitlich neu denken. Ein Wendepunkt ist die Funkausstellung 1955 mit den „entrümpelten“ Radios und dem strengen Braun‑Messestand, der die Konkurrenz schockiert, aber Braun international sichtbar macht.\n\nZentralfiguren im Design sind zunächst Hans Gugelot und dann Dieter Rams, später Reinhold Weiß. Anhand von Ikonen wie dem „Schneewittchensarg“ (Kompaktanlage mit Plexiglasdeckel), den modularen Hi‑Fi‑Anlagen und den Haushaltsgeräten (Küchenmaschinen, Toaster, Lüfter) wird gezeigt, wie technische Innovation, Materialexperimente (präzise bearbeiteter Kunststoff, Blechgehäuse, Plexiglas) und formale Reduktion zusammenlaufen. Parallel dazu entsteht ein konsequent sachlicher visueller Auftritt (Grafik, Werbung, Kataloge), der Kund:innen ernst nimmt statt sie zu ködern.\n\nEin weiterer Strang ist die Unternehmenskultur: Braun investiert in Gesundheitszentrum, Kantine, Weiterbildung und Kommunikation nach innen. Ehemalige Mitarbeitende berichten von der besonderen Atmosphäre, der sozialen Verantwortung der Braun‑Brüder und Entscheidungen wie der Freigabe des Sicherheitsstecker‑Patents „damit alle profitieren“.\n\nGegen Ende beschreibt der Film, wie Braun in den 1960ern stark wächst, weltweit \nAnerkennung findet (MoMA, Weltausstellungen) und „Braun‑Design“ zum Synonym für zeitloses, funktionales Design wird – bis mit der Umwandlung in eine Aktiengesellschaft und dem Verkauf an Gillette Ende der 1960er die Gründerära und der unmittelbare Einfluss der Brüder Braun endet.\n",
+      "x": 4.6881,
+      "y": 43.9174,
+      "z": 7.9703
+    },
+    {
+      "id": "Bauhaus vs Braun",
+      "title": "Bauhaus vs Braun",
+      "body": "2026-06-24 18:40\n\ntags: [Bauhaus](#wiki:Bauhaus), [Braun](#wiki:Braun)\n\n\nUnterschiede rausarbeiten! \n\nbraun - firma vs bauhaus - bewegung\n\nwie sind die unterschiedlichen Welten aufgebaut?\nwelche ziele verfolgen sie?\nvisuelle 'gleichschaltung' von produkten und das entwickeln einer Markenidentität vs loses Netzwerk an Contributors, verbunden durch das Teilen von Weltanschauungen und Mentalität",
+      "x": 11.9091,
+      "y": 24.563,
+      "z": 5.0875
+    },
+    {
+      "id": "Bauhaus",
+      "title": "Bauhaus",
+      "body": "2026-06-25 01:32\n\ntags: [Worlding](#wiki:Worlding)\n\n\n\n![Bauhaus-Signet.svg](assets/Bauhaus-Signet.svg)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n![Bauhaus-program.svg](assets/Bauhaus-program.svg)\nBauhaus Programm\n\n\n\n\nhttps://de.wikipedia.org/wiki/Bauhaus\n\n\n\n\n\n\n\n\n\n##### Links zu Bildern und Grafiken\n+ Von SuperManu - fr:Image:Bauhaus program.jpg Quelle: https://www.bauhaus.de/de/das_bauhaus/45_unterricht/, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=2655531\n+ Von Oskar Schlemmer - Diese Datei wurde von diesem Werk abgeleitet: Bauhaus logo.png von Hendrike, Gemeinfrei, https://commons.wikimedia.org/w/index.php?curid=5030956",
+      "x": 9.118,
+      "y": 36.6683,
+      "z": 24.7542
+    },
+    {
+      "id": "Braun",
+      "title": "Braun",
+      "body": "2026-06-25 02:13\n\ntags: [Designsystem](#wiki:Designsystem)\n\n\n Wie hat es Braun geschafft eine visuelle Identität über die extrem breite Palette an Produkten (mit unterschiedlichsten Funktionen und Benutzungsweisen) hinweg zu entwickeln?\n\n+ Welche Parameter wurden für die visuelle Gestaltungssprache gesetzt? \n\n+ Sind diese Parameter 'nur' visueller Natur (Farben, Radien, Fonts,...) oder steckt mehr dahinter? Wenn ja.. was?\n\n\n##### Links\n+ ",
+      "x": -4.4304,
+      "y": 27.1938,
+      "z": -5.0747
+    },
+    {
+      "id": "Designs for the Pluriverse - Arturo Escobar",
+      "title": "Designs for the Pluriverse   Arturo Escobar",
+      "body": "2026-06-27 18:19\n\ntags: [Systemtheorie](#wiki:Systemtheorie), [Worlding Systems Theory - Bruce Clarke](#wiki:Worlding%20Systems%20Theory%20-%20Bruce%20Clarke)\n\n\nArturo Escobar’s **Designs for the Pluriverse** advocates for a fundamental **ontological reorientation** of design, moving it away from the destructive, rationalistic traditions of **patriarchal capitalist modernity**. The text argues that design is never neutral; rather, it is a **world-making practice** that historically has enforced a single, globalized way of life while suppressing cultural and biological diversity. Escobar proposes a shift toward **relationality**, an ethos of **radical interdependence** where the \"double movement\" of design acknowledges that as we create our tools and environments, they simultaneously **design us back**.\n\nTo counter the \"defuturing\" effects of modern industry, the author champions **design for transitions**, a framework aimed at fostering a **pluriverse**—a \"world where many worlds fit.\" This approach draws inspiration from the **autonomous design** practices of indigenous and Afro-descendant communities in Latin America, who use design to defend their territories and \"Life Projects.\" By centering the **communal** and the \"politics of the relational,\" Escobar seeks to empower local groups to self-organize and reclaim their **cultural and ecological autonomy**.\n\nUltimately, the book serves as a bridge between **critical social theory** and professional practice, urging designers to become activists for a **convivial** and sustainable future. Escobar envisions a transition from a civilization based on domination to one rooted in a **\"biology of love\"** and mutual care. This transformation requires designers to move beyond mere object creation and instead facilitate the **collective making of worlds** that honor the Earth and the multiplicity of human experience.\n\n##### Links\n+ [Designs for the Pluriverse - Arturo Escobar](#wiki:Designs%20for%20the%20Pluriverse%20-%20Arturo%20Escobar)\n+ https://www.youtube.com/watch?v=8Ouy7aN6XPs",
+      "x": 41.8647,
+      "y": -1.4738,
+      "z": -11.4946
+    },
+    {
+      "id": "Dieter Rams Thesen für gutes Design",
+      "title": "Dieter Rams Thesen für gutes Design",
+      "body": "2026-06-24 17:26\n\ntags: [Dieter Rams für Braun](#wiki:Dieter%20Rams%20f%C3%BCr%20Braun)\n\n Dieter Rams Thesen für gutes Design | DW Deutsch\n\t* https://www.youtube.com/watch?v=h5Pf_7gU2tk\n",
+      "x": 17.0386,
+      "y": 54.6552,
+      "z": 6.223
+    },
+    {
+      "id": "Dieter Rams für Braun",
+      "title": "Dieter Rams für Braun",
+      "body": "\n2026-06-24 16:37\n\ntags: [Braun](#wiki:Braun), \n\nPrompt: \n#### Wer ist Dieter Rams und inwiefern ist seine gestalterische Arbeit von Systemen geprägt?\n\nDieter Rams ist ein deutscher Industriedesigner (geb. 1932 in Wiesbaden), der vor allem durch seine Arbeit für Braun und das Möbellabel Vitsoe seit den 1950er-Jahren das Bild der modernen Produktgestaltung geprägt hat. Als Leiter der Formgebung bei Braun (1961–1995) entwickelte er mit seinem Team ein konsequent reduziertes, technisch-klares Design, das zahlreiche Alltagsprodukte – Radios, Hi-Fi-Anlagen, Rasierer, Haushaltsgeräte – zu heute kanonischen Designklassikern machte und u. a. das spätere Apple-Design stark beeinflusste.\n\n**Systemische Prägung seiner Gestaltung**\n\nRams’ Arbeit ist in mehrfacher Hinsicht von Systemen geprägt:\n\n**1. Produktsysteme und Baukastendenken**\n\nFür Braun und Vitsoe entwickelte Rams nicht isolierte Einzelobjekte, sondern **kompatible Produktfamilien**. Hi-Fi-Anlagen, Lautsprecher, Radios oder auch Möbel sollten sich kombinieren, stapeln, ergänzen lassen und als visuell wie funktional zusammenhängendes System wirken. Das zeigt sich exemplarisch:\n\n- bei Braun in modularen Hi-Fi-Komponentenlinien wie Regie oder Atelier, die formal und technisch aufeinander abgestimmt waren;\n- bei Vitsoe im Regalsystem 606 (1960), das als offenes, erweiterbares Ordnungssystem gedacht ist, und im Sesselprogramm 620 (1962), das sich zu Sitzlandschaften konfigurieren lässt.\n\nDiese Systemorientierung verschiebt den Fokus weg vom „solitären Objekt“ hin zu Serien, Typologien und Langzeitkompatibilität.\n\n  \n**2. Formale Systeme: Raster, Proportionen, Wiedererkennbarkeit**\n\nRams arbeitete mit klaren formalen Ordnungen: stabile Proportionen, wiederkehrende Gehäusegeometrien, harmonisierte Schalter- und Anzeigenlayouts. Dadurch entstehen „Formfamilien“: Produkte unterschiedlicher Funktion fügen sich durch ein gemeinsames Vokabular zu einem kohärenten visuellen System.\n\nDie strikte Reduktion – glatte Flächen, sachliche Typografie, begrenzte Farbpaletten – ist selbst ein System: Sie erzeugt ein wiedererkennbares „Braun-Gesicht“ und minimiert visuelles Rauschen zugunsten der Nutzbarkeit.\n\n  \n**3. Bedienlogik als System**\n\nRams zielte auf einfache, „sprechende“ Bedienoberflächen: Knöpfe, Regler und Anzeigen sollten logisch angeordnet, eindeutig codiert und auf das Wesentliche reduziert sein. Hinter dieser Haltung steckt ein implizites Interaktionssystem:\n\n- ähnliche Funktionen werden ähnlich angeordnet und gestaltet,\n- Komplexität wird geschichtet (zuerst das Nötige, dann das Optionale),\n- visuelle Hierarchien leiten die Hand des Benutzers.\n\nSo entsteht ein wiederkehrendes Bedienmuster, das sich über Produktgenerationen hinweg lernen und übertragen lässt.\n\n  \n**4. Theoretisches System: Zehn Thesen für gutes Design**\n\nMit seinen „Zehn Thesen für gutes Design“ hat Rams seine Haltung explizit zu einem **reflexiven System von Gestaltungsprinzipien** verdichtet (innovativ, brauchbar, ästhetisch, verständlich, unaufdringlich, ehrlich, langlebig, konsequent im Detail, umweltfreundlich, so wenig Design wie möglich).\n\nDiese Thesen funktionieren wie ein normatives Regelwerk, das nicht nur seine eigene Praxis ordnet, sondern als modular übertragbares System für andere Gestalter*innen dient – eine Art „Design-Operating-System“, das Entscheidungen rahmt.\n\n  \n**5. Langfristigkeit, Pflege und Evolution von Systemen**\n\nRams’ Möbel- und Gerätesysteme sind auf Dauer und Weiterentwicklung angelegt: Regale, Tische, Sessel, aber auch Gerätereihen sollten nicht schnell ersetzt, sondern erweitert, repariert, aktualisiert werden. Das impliziert:\n\n- Serientreue und Maßkonstanz über Jahrzehnte,\n- Rückwärtskompatibilität (alte und neue Elemente passen zusammen),\n- einen systemischen Blick auf Lebenszyklen, Umweltwirkung und Ressourcennutzung.\n\n„Langlebigkeit“ und „Umweltfreundlichkeit“ in seinen Thesen sind damit explizit systemische Kategorien, nicht nur Materialfragen.\n\n  \n\nZusammengefasst: Rams ist nicht nur Gestalter einzelner Ikonen, sondern Denker und Entwickler von Produkt-, Form- und Interaktionssystemen, die durch Klarheit, Reduktion und Regelhaftigkeit zusammenhalten und damit bis heute anschlussfähig bleiben.\n\n",
+      "x": 17.5689,
+      "y": 47.5772,
+      "z": 16.7338
+    },
+    {
+      "id": "OS",
+      "title": "OS",
+      "body": "2026-06-25 11:52\n\ntags: [digital architecture](#wiki:digital%20architecture), [Systemtheorie](#wiki:Systemtheorie), [Zettelkasten](#wiki:Zettelkasten)\n\n\n\n\n\n##### Links\n+ ",
+      "x": -28.4212,
+      "y": -15.9998,
+      "z": -20.5433
+    },
+    {
+      "id": "RAG - Retrieval-augmented generation",
+      "title": "RAG   Retrieval augmented generation",
+      "body": "\n\n\n2026-06-23 17:17\n\ntags: [Agents and LLMs](#wiki:Agents%20and%20LLMs), [OS](#wiki:OS)\n\n\nhttps://en.wikipedia.org/wiki/Retrieval-augmented_generation\n\nRetrieval-augmented generation (RAG) ist ein Verfahren, bei dem große Sprachmodelle (LLMs) vor der Antwort **gezielt externe Informationen abrufen**, statt sich nur auf ihr statisches Trainingswissen zu verlassen. Dazu werden relevante Dokumente aus Datenbanken, internen Firmenquellen oder dem Web gesucht und zusammen mit der Nutzerfrage als erweiterter Prompt ins Modell gegeben. So können Chatbots aktuelles oder domänenspezifisches Wissen nutzen, ohne das Modell ständig neu zu trainieren.\n\nTechnisch werden die Referenzdaten meist in Vektoren (Embeddings) umgewandelt und in einem Vektor­datenbank‑Index gespeichert. Bei einer Anfrage wählt ein Retriever die passendsten Textstücke aus, die dann via Prompt Engineering in die Modell­eingabe „eingestopft“ werden (Prompt Stuffing), damit das Modell diese frischen Infos gegenüber seinem alten Trainingsstand priorisiert.\n\nRAG soll Halluzinationen reduzieren und Fakten­treue erhöhen, löst das Problem aber nicht vollständig: Das Modell kann kontextlose oder irreführende Quellen falsch interpretieren, widersprüchliche Informationen vermischen oder trotz fehlender Grundlage weiterhin „erfinden“. Zudem bleibt ein gewisser Bedarf an Modell­weiterentwicklung und ‑training bestehen, etwa um Unsicherheit explizit zu erkennen.\n\nDer Artikel beschreibt mehrere Verbesserungs­hebels entlang der Pipeline: bessere Encoder (dichte/sparse Vektoren, Late Interaction, Hybrid-Ansätze), retriever-zentrierte Methoden (Vortraining, supervised Optimierung, Reranking), architektonische Anpassungen der Sprachmodelle (z.B. Retro/Retro++), Chunking-Strategien für unterschiedliche Dateitypen sowie Hybrid Search (Kombination aus Vektor- und klassischer Volltextsuche). Ein eigenes Unterkapitel widmet sich „RAG Poisoning“: selbst korrekte, aber irreführend eingebettete oder kontextlose Inhalte können zu falschen Schlussfolgerungen führen, wenn das Modell sie nicht richtig einordnet.\n\nKurz: RAG ist heute ein zentrales Muster, um LLMs faktennäher, aktueller und anwendungs­spezifischer zu machen, bleibt aber anfällig für Fehlinterpretationen, schlechte Retrievalqualität und manipulierte oder missverstandene Quellen.\n\ngutes youtube video!\nRAG Explained For Beginners",
+      "x": -31.099,
+      "y": -35.4464,
+      "z": -4.5613
+    },
+    {
+      "id": "Shader",
+      "title": "Shader",
+      "body": "2026-06-25 11:14\n\ntags: [UI](#wiki:UI)\n\n\nShader als visualisierung von OS\n\t\n\n\n##### Links\n+ [thebookofshaders.pdf](assets/thebookofshaders.pdf)",
+      "x": -40.6964,
+      "y": 6.2506,
+      "z": 3.4416
+    },
+    {
+      "id": "Systemtheorie",
+      "title": "Systemtheorie",
+      "body": "2026-06-25 09:58\n\ntags: [Zettelkasten](#wiki:Zettelkasten), [Worlding](#wiki:Worlding)\n\n## Eine Welt aus Systemen\n\n\n\"Ein System ist die Differenz zwischen System und Umwelt\" - Niklas Luhman (Zitat aus Vorlesung von Prof. Luhmann über das Differenzprinzip aus seiner Einführung in die Systemtheorie (Aufzeichnung aus dem Wintersemester 1991-1992 / Fakultät für Soziologie / Universität Bielefeld))\n\n#### Systeme sind keine eigenständigen Objekte! sie funktionieren in der Differenz zur Umwelt\n![Bildschirmfoto 2026-06-25 um 13.05.31.png](assets/Bildschirmfoto-2026-06-25-um-13.05.31.png)\n\nSUMMARY von der Vorlesung \nDie Vorlesung entwickelt Schritt für Schritt einen differenztheoretischen Systembegriff und bindet ihn an Kommunikation und Bewusstsein.\n\n  \n\nLuhmann setzt beim Übergang von der klassischen Theorie „offener Systeme“ an. Dort ist bereits klar: Ohne Umwelt kein System; Systeme existieren nur als **Differenz von System und Umwelt**, nicht als in sich ruhende Substanzen. Anstatt Systeme über „Wesen“ oder feste Strukturen zu definieren, verschiebt er die Frage: Wie kann die Differenz System/Umwelt über strukturelle Veränderungen hinweg erhalten bleiben?\n\n  \n\nDarauf baut er einen differenztheoretischen Ansatz auf. Systemtheorie, so Luhmann, beginnt nicht mit einer Einheit oder Kosmologie, sondern mit einer Unterscheidung. Die grundlegende Unterscheidung der Systemtheorie ist: System vs. Umwelt. Er zeigt, dass es in Philosophie, Linguistik, Soziologie und Informationstheorie bereits Vorläufer eines solchen Denkens gibt: bei Saussure (Sprache als Differenz von Zeichen, nicht primär als Bezug auf Dinge), bei Tarde/Girard (Imitation und Konflikt als von Differenzen ausgehende soziale Dynamik) und bei Bateson („information is a difference that makes a difference“). Gemeinsam ist all diesen Ansätzen: Sie beginnen nicht mit Dingen, sondern mit Unterscheidungen.\n\n  \n\nDie zentrale theoretische Referenz ist dann G. Spencer-Brown (Laws of Form) und, ergänzend, Louis Kauffman. Deren Kalkül arbeitet mit einem einzigen Zeichen bzw. Operator („Markierung“/Haken oder einer Schleife), das zugleich eine Grenze zieht und eine Seite bezeichnet. Luhmann übernimmt aus diesem Kalkül drei Hauptideen: Erstens, jede Unterscheidung hat zwei Seiten, aber sie wird immer nur gebraucht, um eine Seite zu markieren. Zweitens, Unterscheidung und Bezeichnung sind zwei untrennbare Komponenten desselben Zeichens. Drittens, im Kalkül steckt von Anfang an eine verdeckte Paradoxie: Die Unterscheidung enthält bereits eine Unterscheidung in der Unterscheidung (Distinction/Indication), die erst später explizit wird.\n\n  \n\nDarauf aufbauend führt er den Formbegriff ein: Eine Form ist eine Einheit mit zwei Seiten; methodisch wichtig ist, dass beim Operieren immer nur eine Seite verwendet werden kann, während die andere als unbenutzte Seite mitgeführt wird. „System“ lässt sich nun als Form verstehen, deren zwei Seiten „System“ und „Umwelt“ sind. Entscheidend ist: Systemtheorie beschreibt mit „System“ immer diese Zweiseitigkeit, nicht ein isoliertes Ding.\n\n  \n\nVon hier aus verschiebt Luhmann den Fokus auf Operationen. Statt Systeme über eine Liste von Merkmalen (Element, Relation, Struktur, Prozess…) zu definieren, versucht er, sie über einen **einzigen Operationstyp** zu fassen, der sich an sich selbst anschließt. In der Biologie sei das – mit Maturana/Varela – Autopoiesis: ein chemischer Reproduktionstypus, der Leben erzeugt und erhält. Für soziale Systeme identifiziert er Kommunikation als solche Operation. Sozialsysteme entstehen, wenn Kommunikation an Kommunikation anschließt; jede weitere Kommunikation reproduziert die Differenz von System (Kommunikationszusammenhang) und Umwelt (alles, was nicht Kommunikation ist).\n\n  \n\nDaraus folgt eine starke These: Soziale Systeme sind operativ geschlossen, weil Kommunikation nur durch Kommunikation erzeugt und fortgesetzt werden kann; gleichzeitig sind sie strukturell an eine Umwelt gekoppelt, über die sie kommunizieren. In jeder Kommunikation ist bereits eine interne Differenz angelegt: zwischen Information (Worüber wird gesprochen?) und Mitteilung (Wer teilt was mit welchem Modus?). Diese innere Zweiteiligkeit der Kommunikation interpretiert Luhmann als eine Realisierung des „Wiedereintritts“ (re-entry) der Form in die Form: Die Unterscheidung (z.B. Selbstreferenz/Fremdreferenz) wird innerhalb der eigenen Operation erneut wirksam.\n\n  \n\nAn diesem Punkt generalisiert er: Re-entry bedeutet, dass ein System die durch es selbst gezogene Differenz (System/Umwelt) ins eigene Operieren hineinzieht. Soziale Systeme können sich selbst und ihre Umwelt beobachten, indem sie zwischen Selbstreferenz (Bezug auf die eigene Kommunikationsgeschichte und -struktur) und Fremdreferenz (Bezug auf „etwas anderes“, Themen, Weltzustände) unterscheiden und diese Differenz permanent verarbeiten. Dasselbe, so Luhmann, gelte auch für psychische Systeme (Bewusstsein).\n\n  \n\nZur Illustration der psychischen Seite bezieht er sich auf Husserls transzendentale Phänomenologie: Bewusstsein ist immer Bewusstsein von etwas (Phänomen) und zugleich reflexiv auf sich selbst bezogen. Husserls Unterscheidung von Noesis (Vollzugsform des Bewusstseins) und Noema (intentionales Objekt) entspricht funktional der Differenz von Selbstreferenz und Fremdreferenz im Systemtheorie‑Vokabular. Das Bewusstsein operiert in Zeit (Retention/Protention) und kann sowohl an Phänomene (Weltaspekte) als auch an sich selbst anschließen; auch hier also eine unaufhebbare Kopplung von Selbst- und Fremdreferenz. Bewusstsein und Kommunikation sind damit zwei verschiedene Systemtypen, die aber dieselbe grundlegende Differenz (Selbst/Fremd) operativ nutzen.\n\n  \n\nLuhmann deutet an, dass sich diese Kopplung über den Sinnbegriff fassen lässt: „Sinn“ bezeichnet Strukturen und Muster in der Art, wie Welt phänomenal (im Bewusstsein) und informativ (in der Kommunikation) erschlossen wird. Obwohl Bewusstsein und Kommunikation operativ verschieden sind, arbeiten beide mit der Organisation von Sinn entlang der Differenzen Selbst/Fremd und Gegenwart/Vergangenheit/Zukunft.\n\n  \n\nEin weiterer zentraler Block der Vorlesung behandelt das Problem der Paradoxie: Re-entry bedeutet, dass „dasselbe“ (eine Unterscheidung) in das von ihr Unterschiedene wieder eintritt. Die Unterscheidung ist so zugleich dieselbe und nicht dieselbe – eine klassische Paradoxie. Theoretisch auflösbar wird diese Paradoxie nur über weitere Unterscheidungen, insbesondere die Differenz zwischen interner und externer Beobachtung. Ein Beobachter kann von außen ein System beobachten (Fremdbeobachtung) oder sich selbst als beobachtendes System reflektieren (Selbstbeobachtung). Indem man diese Beobachterpositionen unterscheidet, lassen sich die paradoxen Überlagerungen von „derselben“ Unterscheidung entflechten.\n\n  \n\nZum Schluss wendet Luhmann diese Figur auf die Gesellschaft an. Die Soziologie ist selbst Teil der Gesellschaft, kann aber Gesellschaft so beschreiben, als ob sie von außen beobachtet würde. Gesellschaftliche Selbstbeschreibungen (z.B. „modern“, „ökologisch sensibilisiert“, „kapitalistisch“, „postmodern“) sind kommunikative Formen des Re-entry: Die Gesellschaft kommuniziert über die eigene Kommunikation und über ihre Umwelt. Ökologische Krisen zum Beispiel existieren für die Soziologie zunächst als Kommunikationsphänomene (Debatten, Alarmmeldungen, politische Programme), nicht als „bloße Tatsachen“; nur über diese kommunikative Bearbeitung werden sie gesellschaftlich wirksam. Die Aufgabe der soziologischen Theorie ist es, diese Selbstbeobachtungen und ihre Selektivität zu analysieren, ohne die operative Geschlossenheit des Kommunikationssystems zu verkennen.\n\n  \n\nDie angekündigte nächste Einheit („operative Geschlossenheit“) soll diese Konsequenz explizit machen: Wenn Systeme über einen einzigen Operationstyp definiert werden, folgt aus dem differenztheoretischen Ansatz notwendig, dass Systeme operativ geschlossen, aber über strukturelle Kopplungen und Sinn an Umweltprozesse angeschlossen sind.\n\n\n##### Links\n\n+ https://de.wikipedia.org/wiki/Systemdenken_(Systemtheorie)\n\n+ https://de.wikipedia.org/wiki/Systemtheorie_(Luhmann)\n\n+ Niklas Luhmann – 1991 – System als Differenz (Formanalyse)\n\t+ https://www.youtube.com/watch?v=LpLeSbXHVe0&t=224s\n   \n+ Niklas Luhmann: Systemtheorie (random Youtube Video in dem Systemtheorie erklärt wird)\n\t+ https://www.youtube.com/watch?v=_J-8lrTW9Fc\n\n+ Niklas Luhmann – 1994 – Eine Welt aus Systemen\n\t+ https://www.youtube.com/watch?v=N1cau5PtR_Y\n",
+      "x": 42.9795,
+      "y": -19.9598,
+      "z": -2.4979
+    },
+    {
+      "id": "Tisch",
+      "title": "Tisch",
+      "body": "2026-06-24 16:57\n\ntags: [Worlding](#wiki:Worlding), \n\n\nWas ist ein Tisch?\nWelche Parameter müssen erfüllt sein als Beweis seiner Existenz?\nStein = Tisch ?\n",
+      "x": 30.3627,
+      "y": -6.7717,
+      "z": 23.4997
+    },
+    {
+      "id": "UI",
+      "title": "UI",
+      "body": "2026-06-25 12:23\n\ntags: [digital architecture](#wiki:digital%20architecture)\n\n\nNetflix UI sieht für jeden nutzer anders aus - passt sich an - bleibt dabei unwiederkennlich Netflix. - generated UI\n\n\ndata(base) visualisation\n\t[Zettelkasten](#wiki:Zettelkasten)\n\n\n##### Links\n+ ",
+      "x": -35.6724,
+      "y": 6.2427,
+      "z": -13.0718
+    },
+    {
+      "id": "Worlding Systems Theory - Bruce Clarke",
+      "title": "Worlding Systems Theory   Bruce Clarke",
+      "body": "2026-06-27 18:01\n\ntags: [Systemtheorie](#wiki:Systemtheorie), [Worlding](#wiki:Worlding)\n\n\nThis text explores **neocybernetic systems theory** and its application to the concept of a **globalized world society**, primarily through the lens of sociologist Niklas Luhmann. It argues that modern society is a singular, **encompassing system of communication** that functions through specialized subsystems—like law, economy, and science—which operate according to their own internal logic while remaining closed off from their environment. The author contrasts this \"one-world\" systemic view with the **pluriverse and fractiverse**, concepts from scholars like Arturo Escobar and John Law who suggest that reality is actually composed of **multiple, co-existing worlds** enacted through diverse human practices. Finally, the text suggests that while social systems are often blind to their surroundings, they can be \"nudged\" by human consciousness and the **ecological urgency of Gaia**, potentially forcing the global system to adapt to the material realities of our **planetary environment**.\n##### Links\n+ [Worlding Systems Theory - Bruce Clarke](#wiki:Worlding%20Systems%20Theory%20-%20Bruce%20Clarke)",
+      "x": 37.3979,
+      "y": -10.0926,
+      "z": 7.6334
+    },
+    {
+      "id": "Zettelkasten",
+      "title": "Zettelkasten",
+      "body": "2026-06-23 18:48\n\ntags: [Systemtheorie](#wiki:Systemtheorie), [Worlding](#wiki:Worlding)\n\n\nhttps://en.wikipedia.org/wiki/Zettelkasten\nhttps://niklas-luhmann-archiv.de/nachlass/zettelkasten\n\nkurzer Videobeitrag\nhttps://www.youtube.com/watch?v=4veq2i3teVk\n\nDer Zettelkasten ist eine Technik zur Wissensorganisation, bei der einzelne Gedanken, Fakten oder Zitate jeweils auf separaten Zetteln bzw. Karten mit Quellenangabe festgehalten werden. Diese Zettel werden nicht linear, sondern thematisch und über Verweise geordnet. Zentral ist dabei die **Vernetzung der Einträge über Schlagworte und Querverweise**, sodass ein Geflecht von Notizen entsteht, das als „zweites Gedächtnis“ fungiert.\n\nIm methodischen Gebrauch – etwa beim wissenschaftlichen Arbeiten oder in der qualitativen Textanalyse (z.B. Grounded Theory, Inhaltsanalyse) – dient der Zettelkasten dazu, Informationen dauerhaft zugänglich zu machen, Zusammenhänge sichtbar zu machen und neue Kombinationen von Ideen zu ermöglichen. Statt ein festes Notizbuch chronologisch zu führen, wird Wissen modular abgelegt und anschließend immer wieder neu verknüpft.\n\n\n\ngrößtes beispiel für Zettelkastenprinzip - Wikipedia \n\nbeim betrachten vom Beispiel Wikipedia wird schnell auch die problematische Seite des Prinzips Zettelkasten sichtbar. Es gibt keinen Fokuspunkt zu dem zurückgekehrt wird. Das Potential sich zu 'verzetteln' ist sehr hoch. Um das volle Potential des Zettelkastens ausschöpfen zu können macht es wenig Sinn einen riesigen, alles umfassenden Kasten zu bauen (Wikipedia). Zwar kann eine LLM mit Hilfe von [RAG - Retrieval-augmented generation](#wiki:RAG%20-%20Retrieval-augmented%20generation) den gesamten Inhalt der Datenbank leicht zugänglich machen, aber manuell wird der Zettelkasten mit zunehmender Komplexität immer unzugänglicher. Es braucht ein aktives gestalten, [Database design](#wiki:Database%20design).",
+      "x": 22.3512,
+      "y": -23.2123,
+      "z": 15.837
+    },
+    {
+      "id": "augmenting Reality",
+      "title": "augmenting Reality",
+      "body": "2026-06-25 11:21\n\ntags: [digital architecture](#wiki:digital%20architecture), [UI](#wiki:UI)\n\n\n\n\n\n##### Links\n+ [Xperience- An Augmented Reality Application to PromoteBusiness to Customer (B2C) Experience in Retail.pdf](assets/Xperience--An-Augmented-Reality-Application-to-PromoteBusiness-to-Customer-B2C-Experience-in-Retail.pdf)\n+ [philtou.com/AR-Archive](https://www.philtou.com/ar-archive)\n+ ",
+      "x": -10.7441,
+      "y": 4.1464,
+      "z": -26.8135
+    },
+    {
+      "id": "data visualisation",
+      "title": "data visualisation",
+      "body": "2026-06-26 06:29\n\ntags: [UI](#wiki:UI), [Zettelkasten](#wiki:Zettelkasten)\n\n\n\n\n\n##### Links\n+ ",
+      "x": -48.168,
+      "y": -10.5378,
+      "z": -2.045
+    },
+    {
+      "id": "digital architecture",
+      "title": "digital architecture",
+      "body": "2026-06-25 10:57\n\ntags: [Designsystem](#wiki:Designsystem), [Worlding](#wiki:Worlding), [Agents and LLMs](#wiki:Agents%20and%20LLMs)\n\n\n\n\n\n##### Links\n+ [PICON-ARCHITECTUREVIRTUALTOWARDS-2004.pdf](assets/PICON-ARCHITECTUREVIRTUALTOWARDS-2004.pdf)\n+ [Reffat-DIGITALARCHITECTUREREFORMING-2008.pdf](assets/Reffat-DIGITALARCHITECTUREREFORMING-2008.pdf)\n+ [Case-DESIGNIMPLICATIONSTOMORROWS-2008.pdf](assets/Case-DESIGNIMPLICATIONSTOMORROWS-2008.pdf)\n+ [Kraus-MixedRealityDesignBrokenWorld-2019.pdf](assets/Kraus-MixedRealityDesignBrokenWorld-2019.pdf)\n+ ",
+      "x": -2.3031,
+      "y": -17.0631,
+      "z": -22.8914
+    },
+    {
+      "id": "digital realities",
+      "title": "digital realities",
+      "body": "2026-06-25 15:07\n\ntags: [augmenting Reality](#wiki:augmenting%20Reality)\n\n## Case-DESIGNIMPLICATIONSTOMORROWS-2008\n\n[Case-DESIGNIMPLICATIONSTOMORROWS-2008.pdf](assets/Case-DESIGNIMPLICATIONSTOMORROWS-2008.pdf)\n\n\"The digital world of tomorrow will require a new approach to design. The realm of science fiction today, digital environments will be tomorrow's reality. Three types of digital realities can be identified: intelligent reality, real reality, and neural reality. Their medium is transformable, intelligent, and interactive. They require a design process that is dynamic rather than static, and an approach that is process oriented rather than object oriented. Precedents for this process can be found in the design arts of theater, film, music, and dance. The methods they use are instructive to designers of tomorrows digital realities\" #zitat  \n\n\"**Intelligent reality** is a digital environment where computers are invisible and intelligence is invested in everyday objects. These objects have an awareness of your presence and act intelligently towards you. When networked together, these intelligent objects operate collectively.\" #zitat \n\nthe concept of Smart-Devices developing towards Smart-Home resulting ultimately in a 'Smart-Life'. Approaches of realising this 'Intelligent reality' can be seen across the tech-sector.. Whoop and fitbit wristbands for example are smart devices that actively try to not look like computers, have no screen, buttons or any other way to interact with it. there is no more noticable difference in appearance between a 'intelligent' wristband and a 'normal' one. Same goes for (smart) lightbulbs, (smart) \n\n\n- **Real Reality (also called Real Virtual Environments):** Unlike traditional virtual reality which uses visual illusions, these are tangible, digitally generated facsimiles of real environments. They are made possible by **nanotechnology**, specifically \"foglets\" that can coalesce to form objects that not only look real but also possess tactile properties like hardness or wetness,. This technology eliminates the need for helmets or gloves because the environment itself is palpable.\n\n#### Broken down this could be applied as a goal for object and furniture design - focussing on designing modular systems that enable transformative spaces for living and working instead of the good old Wandschrank or other isolated objects.\n\n- **Neural Reality:** This reality is based on placing nano-scale sensors, known as **neural implants**, directly into the nervous system. These implants bypass our natural sensory organs (eyes, ears, skin, etc.) and transmit all five senses—sight, sound, touch, smell, and taste—directly to the brain. This provides the sensation of a \"real\" experience without the need for external displays or body suits.\n\n### this is what our Elon Musks of the world dream of realising with projects like neuralink.. its more or less the matrix concept\n\n\n\n##### Links\n+ [Case-DESIGNIMPLICATIONSTOMORROWS-2008.pdf](assets/Case-DESIGNIMPLICATIONSTOMORROWS-2008.pdf)",
+      "x": 13.5911,
+      "y": -4.7253,
+      "z": -28.3148
+    },
+    {
+      "id": "Database design",
+      "title": "Database design",
+      "body": "2026-06-29 11:36\n\ntags: [Zettelkasten](#wiki:Zettelkasten)\n\n\nein alles umfassender digital twin vs projektbasiertes aufbauen von datenbanken (, die wenn nötig miteinander verknüpft werden können)\n\n##### Links\n+ ",
+      "x": -38.6839,
+      "y": -27.7557,
+      "z": -15.2593
+    },
+    {
+      "id": "Peter Senge - Systems Thinking for a Better World",
+      "title": "Peter Senge   Systems Thinking for a Better World",
+      "body": "2026-06-29 09:54\n\ntags: [Systemtheorie](#wiki:Systemtheorie)\n\nPeter Senge's keynote speech \"Systems Thinking for a Better World\" at the 30th Anniversary Seminar of the Systems Analysis Laboratory \"Being Better in the World of Systems\" at Aalto University, 20 November 2014.\nhttps://www.youtube.com/watch?v=0QtQqZ6Q5-o\n\n##### Links\n+ Peter Senge\n\t+ https://mitsloan.mit.edu/faculty/directory/peter-m-senge\n\n\n+ Systems Thinking for Real Change (corporate unplugged podcast, Wednesday, April 23, 2025)\n\t+ https://shows.acast.com/corporateunplugged/episodes/systems-thinking-for-real-change\n\tIn this episode, Vesna welcomes **Dr. Peter Senge**, renowned MIT Sloan lecturer and pioneer of systems thinking, to the Corporate Unplugged Podcast. Peter explores why true change requires a shift in how we see interdependence, not just in business but in society at large. Drawing from decades of work with organizations and indigenous communities, he explains how deep, sustainable transformation starts with cultural and institutional shifts—far beyond quick fixes or policy tweaks.\n\n\n\n\nchildren are not being given tools to learn systematic thimking",
+      "x": 51.832,
+      "y": -9.2644,
+      "z": 9.7295
+    },
+    {
+      "id": "Unbenannt",
+      "title": "Unbenannt",
+      "body": "2026-06-29 14:38\n\ntags: \n\n\n**remember to update!**\n\ncd \"/Users/philippe/vb database visualisation\"\n./sync-and-push.sh\n\n##### Links\n+ ",
+      "x": -36.1725,
+      "y": -19.0995,
+      "z": 22.1137
+    },
+    {
+      "id": "mixtape",
+      "title": "mixtape",
+      "body": "2026-06-27 23:00\n\ntags: [Zettelkasten](#wiki:Zettelkasten)\n\n\nartefact of worlding\nsame intention as zettelkasten, \n limited ways of data storing and visualisation in the past\n \n\n##### Links\n+ artefact of worlding",
+      "x": -12.4874,
+      "y": -7.9244,
+      "z": 20.1839
+    }
+  ],
+  "links": [
+    {
+      "source": "Designsystem",
+      "target": "Worlding"
+    },
+    {
+      "source": "Designsystem",
+      "target": "Tisch"
+    },
+    {
+      "source": "Designsystem",
+      "target": "Braun"
+    },
+    {
+      "source": "Designsystem",
+      "target": "Bauhaus"
+    },
+    {
+      "source": "Designsystem",
+      "target": "UI"
+    },
+    {
+      "source": "Agents and LLMs",
+      "target": "Worlding"
+    },
+    {
+      "source": "Agents and LLMs",
+      "target": "Designsystem"
+    },
+    {
+      "source": "Agents and LLMs",
+      "target": "digital architecture"
+    },
+    {
+      "source": "Agents and LLMs",
+      "target": "OS"
+    },
+    {
+      "source": "Agents and LLMs",
+      "target": "UI"
+    },
+    {
+      "source": "Agents and LLMs",
+      "target": "RAG - Retrieval-augmented generation"
+    },
+    {
+      "source": "BRAUN DESIGN STORY",
+      "target": "Braun"
+    },
+    {
+      "source": "BRAUN DESIGN STORY",
+      "target": "Dieter Rams für Braun"
+    },
+    {
+      "source": "Bauhaus vs Braun",
+      "target": "Bauhaus"
+    },
+    {
+      "source": "Bauhaus vs Braun",
+      "target": "Braun"
+    },
+    {
+      "source": "Bauhaus",
+      "target": "Worlding"
+    },
+    {
+      "source": "Braun",
+      "target": "Designsystem"
+    },
+    {
+      "source": "Designs for the Pluriverse - Arturo Escobar",
+      "target": "Systemtheorie"
+    },
+    {
+      "source": "Designs for the Pluriverse - Arturo Escobar",
+      "target": "Worlding Systems Theory - Bruce Clarke"
+    },
+    {
+      "source": "Dieter Rams Thesen für gutes Design",
+      "target": "Dieter Rams für Braun"
+    },
+    {
+      "source": "Dieter Rams für Braun",
+      "target": "Braun"
+    },
+    {
+      "source": "OS",
+      "target": "digital architecture"
+    },
+    {
+      "source": "OS",
+      "target": "Systemtheorie"
+    },
+    {
+      "source": "OS",
+      "target": "Zettelkasten"
+    },
+    {
+      "source": "RAG - Retrieval-augmented generation",
+      "target": "Agents and LLMs"
+    },
+    {
+      "source": "RAG - Retrieval-augmented generation",
+      "target": "OS"
+    },
+    {
+      "source": "Shader",
+      "target": "UI"
+    },
+    {
+      "source": "Systemtheorie",
+      "target": "Zettelkasten"
+    },
+    {
+      "source": "Systemtheorie",
+      "target": "Worlding"
+    },
+    {
+      "source": "Tisch",
+      "target": "Worlding"
+    },
+    {
+      "source": "UI",
+      "target": "digital architecture"
+    },
+    {
+      "source": "UI",
+      "target": "Zettelkasten"
+    },
+    {
+      "source": "Worlding Systems Theory - Bruce Clarke",
+      "target": "Systemtheorie"
+    },
+    {
+      "source": "Worlding Systems Theory - Bruce Clarke",
+      "target": "Worlding"
+    },
+    {
+      "source": "Zettelkasten",
+      "target": "Systemtheorie"
+    },
+    {
+      "source": "Zettelkasten",
+      "target": "Worlding"
+    },
+    {
+      "source": "Zettelkasten",
+      "target": "RAG - Retrieval-augmented generation"
+    },
+    {
+      "source": "Zettelkasten",
+      "target": "Database design"
+    },
+    {
+      "source": "augmenting Reality",
+      "target": "digital architecture"
+    },
+    {
+      "source": "augmenting Reality",
+      "target": "UI"
+    },
+    {
+      "source": "data visualisation",
+      "target": "UI"
+    },
+    {
+      "source": "data visualisation",
+      "target": "Zettelkasten"
+    },
+    {
+      "source": "digital architecture",
+      "target": "Designsystem"
+    },
+    {
+      "source": "digital architecture",
+      "target": "Worlding"
+    },
+    {
+      "source": "digital architecture",
+      "target": "Agents and LLMs"
+    },
+    {
+      "source": "digital realities",
+      "target": "augmenting Reality"
+    },
+    {
+      "source": "Database design",
+      "target": "Zettelkasten"
+    },
+    {
+      "source": "Peter Senge - Systems Thinking for a Better World",
+      "target": "Systemtheorie"
+    },
+    {
+      "source": "mixtape",
+      "target": "Zettelkasten"
+    }
+  ],
+  "meta": {
+    "nodeCount": 27,
+    "linkCount": 49,
+    "model": "paraphrase-multilingual-MiniLM-L12-v2"
+  }
+}

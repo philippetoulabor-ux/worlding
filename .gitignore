@@ -1,8 +1,8 @@
-frontend/data.json
 __pycache__/
 .venv/
 *.pyc
 .cache/
 .DS_Store
+.env
 vault/.obsidian/
 vault/.trash/

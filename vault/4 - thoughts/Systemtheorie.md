@@ -2,9 +2,12 @@
 
 tags: [[Zettelkasten]], [[Worlding]]
 
+## Eine Welt aus Systemen
+
+
 "Ein System ist die Differenz zwischen System und Umwelt" - Niklas Luhman (Zitat aus Vorlesung von Prof. Luhmann über das Differenzprinzip aus seiner Einführung in die Systemtheorie (Aufzeichnung aus dem Wintersemester 1991-1992 / Fakultät für Soziologie / Universität Bielefeld))
 
-#### Systeme sind keine eigenständigen Objekte!
+#### Systeme sind keine eigenständigen Objekte! sie funktionieren in der Differenz zur Umwelt
 ![[Bildschirmfoto 2026-06-25 um 13.05.31.png]]
 
 SUMMARY von der Vorlesung 
@@ -61,6 +64,8 @@ Die angekündigte nächste Einheit („operative Geschlossenheit“) soll diese 
 
 ##### Links
 
++ https://de.wikipedia.org/wiki/Systemdenken_(Systemtheorie)
+
 + https://de.wikipedia.org/wiki/Systemtheorie_(Luhmann)
 
 + Niklas Luhmann – 1991 – System als Differenz (Formanalyse)
@@ -68,3 +73,6 @@ Die angekündigte nächste Einheit („operative Geschlossenheit“) soll diese 
    
 + Niklas Luhmann: Systemtheorie (random Youtube Video in dem Systemtheorie erklärt wird)
 	+ https://www.youtube.com/watch?v=_J-8lrTW9Fc
+
++ Niklas Luhmann – 1994 – Eine Welt aus Systemen
+	+ https://www.youtube.com/watch?v=N1cau5PtR_Y

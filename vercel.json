@@ -1,0 +1,11 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/frontend/index.html" },
+    { "source": "/((?!api/).*)(\\.[^/]+)?$", "destination": "/frontend/$1$2" }
+  ],
+  "functions": {
+    "api/chat.py": {
+      "maxDuration": 30
+    }
+  }
+}
