@@ -21,9 +21,38 @@
       font-family: sans-serif;
     }
 
-    #graph {
+    #graph,
+    #graph-2d {
       width: 100%;
       height: 100%;
+    }
+
+    #view-toggle {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .toggle-btn {
+      font-size: 12px;
+      padding: 4px 10px;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #000000;
+      cursor: pointer;
+      font-family: inherit;
+      line-height: 1.3;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(0, 0, 0, 0.06);
+    }
+
+    .toggle-btn.active {
+      background: #000000;
+      color: #ffffff;
+      border-color: #000000;
     }
 
     #overlay {
@@ -264,6 +293,10 @@
   <div id="info-panel" class="panel hidden">
     <h1>Worlding</h1>
     <p id="stats">–</p>
+    <div id="view-toggle" role="group" aria-label="Ansicht wählen">
+      <button type="button" class="toggle-btn active" data-view="3d">3D</button>
+      <button type="button" class="toggle-btn" data-view="2d">2D</button>
+    </div>
   </div>
 
   <div id="note-modal" class="hidden">
@@ -276,15 +309,12 @@
   </div>
 
   <div id="graph"></div>
+  <div id="graph-2d" class="hidden"></div>
 
-  <button id="chat-fab" type="button" aria-label="Chat öffnen">💬</button>
-  <div id="chat-panel" class="hidden">
-    <div id="chat-header">
-      Zettelkasten-Chat
-      <p>Fragen zu den Notizen stellen</p>
-    </div>
+  <div id="chat-panel">
     <div id="chat-messages"></div>
     <form id="chat-form">
+      <button id="chat-collapse" type="button" aria-label="Chat einklappen" title="Einklappen">⌄</button>
       <textarea id="chat-input" rows="1" placeholder="Frage stellen…" maxlength="2000"></textarea>
       <button id="chat-send" type="submit">Senden</button>
     </form>
@@ -295,6 +325,7 @@
   <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
   <script src="https://unpkg.com/three-spritetext@1.8.2/dist/three-spritetext.min.js"></script>
   <script src="https://unpkg.com/3d-force-graph@1.73.0/dist/3d-force-graph.min.js"></script>
+  <script src="https://unpkg.com/force-graph@1.43.5/dist/force-graph.min.js"></script>
   <script>
     const overlay = document.getElementById('overlay');
     const overlayContent = document.getElementById('overlay-content');
@@ -305,24 +336,46 @@
     const noteModalBody = document.getElementById('note-modal-body');
     const noteModalClose = document.getElementById('note-modal-close');
     const noteModalBackdrop = noteModal.querySelector('.note-modal-backdrop');
+    const graphEl = document.getElementById('graph');
+    const graph2dEl = document.getElementById('graph-2d');
+    const viewToggle = document.getElementById('view-toggle');
 
     let graphNodes = [];
     let nodeLookup = new Map();
     let graphRef = null;
+    let graph2dRef = null;
     let sourceHighlightIds = new Set();
+    let rawData = null;
+    let activeView = '3d';
+
+    const TARGET_SPAN = 300;
+    const linkColorDefault = 'rgba(0, 0, 0, 0.25)';
+    const linkColorHighlight = 'rgba(0, 0, 0, 0.95)';
+
+    function applyNodeHighlight(graph) {
+      if (!graph) return;
+      graph.nodeColor((node) => (
+        sourceHighlightIds.has(node.id) ? '#555555' : '#000000'
+      ));
+    }
 
     window.openNoteById = function (noteId) {
       const node = graphNodes.find((n) => n.id === noteId);
-      if (node) openNoteModal(node);
+      if (!node) return;
+      openNoteModal(node);
+      if (activeView === '2d' && graph2dRef) {
+        const gNode = graph2dRef.graphData().nodes.find((n) => n.id === noteId);
+        if (gNode) {
+          graph2dRef.centerAt(gNode.x, gNode.y, 800);
+          graph2dRef.zoom(2, 800);
+        }
+      }
     };
 
     window.highlightChatSources = function (ids) {
       sourceHighlightIds = new Set(ids);
-      if (graphRef) {
-        graphRef.nodeColor((node) => (
-          sourceHighlightIds.has(node.id) ? '#555555' : '#000000'
-        ));
-      }
+      applyNodeHighlight(graphRef);
+      applyNodeHighlight(graph2dRef);
     };
 
     const WIKI_LINK_PATTERN = /\[\[([^\]|#^]+)(?:\|([^\]]*))?(?:#[^\]]*)?(?:\^[^\]]*)?\]\]/g;
@@ -482,27 +535,47 @@
       `;
     }
 
-    function prepareGraphData(data) {
-      const xs = data.nodes.map((n) => n.x);
-      const ys = data.nodes.map((n) => n.y);
-      const zs = data.nodes.map((n) => n.z);
+    function computeScale(nodes) {
+      const xs = nodes.map((n) => n.x);
+      const ys = nodes.map((n) => n.y);
+      const zs = nodes.map((n) => n.z);
       const span = Math.max(
         Math.max(...xs) - Math.min(...xs),
         Math.max(...ys) - Math.min(...ys),
         Math.max(...zs) - Math.min(...zs),
         1,
       );
-      const TARGET_SPAN = 300;
-      const scale = TARGET_SPAN / span;
+      return TARGET_SPAN / span;
+    }
 
+    function cloneLinks(links) {
+      return links.map((link) => ({
+        source: link.source?.id ?? link.source,
+        target: link.target?.id ?? link.target,
+      }));
+    }
+
+    function prepareGraphData3D(data) {
+      const scale = computeScale(data.nodes);
       const nodes = data.nodes.map((node) => {
         const x = node.x * scale;
         const y = node.y * scale;
         const z = node.z * scale;
         return { ...node, x, y, z, fx: x, fy: y, fz: z };
       });
+      return { nodes, links: cloneLinks(data.links) };
+    }
 
-      return { nodes, links: data.links };
+    function prepareGraphData2D(data) {
+      const scale = computeScale(data.nodes);
+      const nodes = data.nodes.map((node) => ({
+        id: node.id,
+        title: node.title,
+        body: node.body,
+        x: node.x * scale + (Math.random() - 0.5) * 20,
+        y: node.y * scale + (Math.random() - 0.5) * 20,
+      }));
+      return { nodes, links: cloneLinks(data.links) };
     }
 
     function fitGraphToView(Graph) {
@@ -570,11 +643,9 @@
       const labelNearDistance = 360;
       const labelFarDistance = 540;
       const labelMinOpacity = 0.25;
-      const linkColorDefault = 'rgba(0, 0, 0, 0.25)';
-      const linkColorHighlight = 'rgba(0, 0, 0, 0.95)';
       let hoveredNode = null;
 
-      const Graph = ForceGraph3D()(document.getElementById('graph'))
+      const Graph = ForceGraph3D()(graphEl)
         .backgroundColor('#ffffff')
         .cooldownTicks(1)
         .graphData(graphData)
@@ -604,6 +675,7 @@
         .onNodeClick((node) => openNoteModal(node));
 
       graphRef = Graph;
+      applyNodeHighlight(Graph);
 
       Graph.d3Force('charge', null);
       Graph.d3Force('center', null);
@@ -636,6 +708,100 @@
       overlay.classList.add('hidden');
     }
 
+    function apply2DLayoutForces(Graph) {
+      const linkForce = Graph.d3Force('link');
+      const chargeForce = Graph.d3Force('charge');
+      Graph.enableNodeDrag(true);
+      if (chargeForce) chargeForce.strength(-120);
+      Graph.d3Force('center', null);
+      if (linkForce) linkForce.distance(80).strength(1);
+    }
+
+    function refreshGraph2DSize() {
+      if (!graph2dRef) return;
+      graph2dRef.width(graph2dEl.clientWidth);
+      graph2dRef.height(graph2dEl.clientHeight);
+    }
+
+    function setGraph2DData() {
+      apply2DLayoutForces(graph2dRef);
+      graph2dRef.graphData(prepareGraphData2D(rawData));
+      applyNodeHighlight(graph2dRef);
+      graph2dRef.d3ReheatSimulation();
+      refreshGraph2DSize();
+      fitGraphToView(graph2dRef);
+    }
+
+    function createGraph2D() {
+      let hoveredNode = null;
+
+      const Graph = ForceGraph()(graph2dEl)
+        .backgroundColor('#ffffff')
+        .nodeId('id')
+        .nodeLabel((node) => node.title)
+        .nodeRelSize(4)
+        .nodeVal(1)
+        .nodeColor(() => '#000000')
+        .linkColor((link) => (
+          linkTouchesNode(link, hoveredNode) ? linkColorHighlight : linkColorDefault
+        ))
+        .linkWidth((link) => (linkTouchesNode(link, hoveredNode) ? 1.5 : 0.8))
+        .onNodeHover((node) => {
+          hoveredNode = node || null;
+          Graph.linkColor(Graph.linkColor());
+          Graph.linkWidth(Graph.linkWidth());
+        })
+        .onNodeClick((node) => openNoteModal(node))
+        .onNodeDragEnd((node) => {
+          node.fx = node.x;
+          node.fy = node.y;
+        });
+
+      graph2dRef = Graph;
+      return Graph;
+    }
+
+    function ensureGraph2D() {
+      if (!graph2dRef) {
+        createGraph2D();
+        setGraph2DData();
+      } else {
+        refreshGraph2DSize();
+      }
+      return graph2dRef;
+    }
+
+    function updateViewToggleButtons() {
+      viewToggle.querySelectorAll('button[data-view]').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.view === activeView);
+      });
+    }
+
+    function switchView(view) {
+      if (view === activeView) return;
+      activeView = view;
+
+      if (view === '3d') {
+        graphEl.classList.remove('hidden');
+        graph2dEl.classList.add('hidden');
+        applyNodeHighlight(graphRef);
+      } else {
+        graphEl.classList.add('hidden');
+        graph2dEl.classList.remove('hidden');
+        ensureGraph2D();
+        fitGraphToView(graph2dRef);
+        applyNodeHighlight(graph2dRef);
+      }
+
+      updateViewToggleButtons();
+    }
+
+    viewToggle.addEventListener('click', (event) => {
+      const btn = event.target.closest('button[data-view]');
+      if (!btn) return;
+      switchView(btn.dataset.view);
+    });
+
     fetch('./data.json')
       .then((response) => {
         if (!response.ok) {
@@ -647,9 +813,14 @@
         if (!data.nodes || !data.links) {
           throw new Error('Ungültiges JSON-Format in data.json.');
         }
-        initGraph(prepareGraphData(data), data.meta || {
-          nodeCount: data.nodes.length,
-          linkCount: data.links.length,
+        rawData = {
+          nodes: data.nodes,
+          links: data.links.map((link) => ({ source: link.source, target: link.target })),
+          meta: data.meta,
+        };
+        initGraph(prepareGraphData3D(rawData), rawData.meta || {
+          nodeCount: rawData.nodes.length,
+          linkCount: rawData.links.length,
           model: 'unbekannt',
         });
       })

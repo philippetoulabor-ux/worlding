@@ -2,21 +2,28 @@
   const CHAT_API =
     document.querySelector('meta[name="zettelkasten-api"]')?.content || '/api/chat';
 
-  const fab = document.getElementById('chat-fab');
   const panel = document.getElementById('chat-panel');
   const messagesEl = document.getElementById('chat-messages');
   const form = document.getElementById('chat-form');
   const input = document.getElementById('chat-input');
   const sendBtn = document.getElementById('chat-send');
+  const collapseBtn = document.getElementById('chat-collapse');
 
-  let isOpen = false;
+  let isExpanded = false;
   let isStreaming = false;
 
-  fab.addEventListener('click', () => {
-    isOpen = !isOpen;
-    panel.classList.toggle('hidden', !isOpen);
-    if (isOpen) input.focus();
-  });
+  function expandChat() {
+    if (isExpanded) return;
+    isExpanded = true;
+    panel.classList.add('expanded');
+  }
+
+  function collapseChat() {
+    if (!isExpanded || isStreaming) return;
+    isExpanded = false;
+    panel.classList.remove('expanded');
+    input.focus();
+  }
 
   function appendMessage(role, text) {
     const el = document.createElement('div');
@@ -72,6 +79,8 @@
 
     isStreaming = true;
     sendBtn.disabled = true;
+    collapseBtn.disabled = true;
+    expandChat();
     appendMessage('user', text);
     input.value = '';
     showTyping();
@@ -126,9 +135,12 @@
     } finally {
       isStreaming = false;
       sendBtn.disabled = false;
+      collapseBtn.disabled = false;
       input.focus();
     }
   }
+
+  collapseBtn.addEventListener('click', collapseChat);
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
