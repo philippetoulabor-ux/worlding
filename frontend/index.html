@@ -37,10 +37,41 @@
       height: 100%;
     }
 
-    #view-toggle {
+    #view-toggle,
+    #color-toggle {
       display: flex;
       gap: 4px;
       margin-top: 8px;
+    }
+
+    #color-legend {
+      list-style: none;
+      margin: 8px 0 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 11px;
+      font-family: sans-serif;
+      color: #666666;
+      line-height: 1.3;
+    }
+
+    #color-legend.hidden {
+      display: none;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-swatch {
+      flex-shrink: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
     }
 
     .toggle-btn {
@@ -51,7 +82,7 @@
       background: rgba(255, 255, 255, 0.9);
       color: #000000;
       cursor: pointer;
-      font-family: inherit;
+      font-family: sans-serif;
       line-height: 1.3;
     }
 
@@ -96,16 +127,19 @@
       top: 16px;
       left: 16px;
       max-width: 280px;
+      font-family: sans-serif;
     }
 
     #info-panel h1 {
       font-size: 15px;
       margin-bottom: 6px;
       font-weight: 600;
+      font-family: sans-serif;
     }
 
     #info-panel p {
       color: #333333;
+      font-family: sans-serif;
     }
 
     .spinner {
@@ -304,9 +338,31 @@
     <h1>Worlding</h1>
     <p id="stats">–</p>
     <div id="view-toggle" role="group" aria-label="Ansicht wählen">
-      <button type="button" class="toggle-btn active" data-view="3d">3D</button>
-      <button type="button" class="toggle-btn" data-view="2d">2D</button>
+      <button type="button" class="toggle-btn active" data-view="2d">2D</button>
+      <button type="button" class="toggle-btn" data-view="3d">3D</button>
     </div>
+    <div id="color-toggle" role="group" aria-label="Farbmodus wählen">
+      <button type="button" class="toggle-btn active" data-color-mode="cmyk">CMYK</button>
+      <button type="button" class="toggle-btn" data-color-mode="default">BW</button>
+    </div>
+    <ul id="color-legend" class="hidden">
+      <li class="legend-item">
+        <span class="legend-swatch" style="background: #000000"></span>
+        1 Link
+      </li>
+      <li class="legend-item">
+        <span class="legend-swatch" style="background: #e6c200"></span>
+        2–4 Links
+      </li>
+      <li class="legend-item">
+        <span class="legend-swatch" style="background: #d4007a"></span>
+        5–7 Links
+      </li>
+      <li class="legend-item">
+        <span class="legend-swatch" style="background: #00a8e8"></span>
+        8+ Links
+      </li>
+    </ul>
   </div>
 
   <div id="note-modal" class="hidden">
@@ -318,8 +374,8 @@
     </div>
   </div>
 
-  <div id="graph"></div>
-  <div id="graph-2d" class="hidden"></div>
+  <div id="graph" class="hidden"></div>
+  <div id="graph-2d"></div>
 
   <div id="chat-panel">
     <div id="chat-messages"></div>
@@ -349,24 +405,66 @@
     const graphEl = document.getElementById('graph');
     const graph2dEl = document.getElementById('graph-2d');
     const viewToggle = document.getElementById('view-toggle');
+    const colorToggle = document.getElementById('color-toggle');
+    const colorLegend = document.getElementById('color-legend');
 
     let graphNodes = [];
     let nodeLookup = new Map();
+    let nodeDegree = new Map();
     let graphRef = null;
     let graph2dRef = null;
     let sourceHighlightIds = new Set();
     let rawData = null;
-    let activeView = '3d';
+    let activeView = '2d';
+    let colorMode = 'cmyk';
 
     const TARGET_SPAN = 300;
     const linkColorDefault = 'rgba(0, 0, 0, 0.25)';
     const linkColorHighlight = 'rgba(0, 0, 0, 0.95)';
 
-    function applyNodeHighlight(graph) {
+    function buildNodeDegree(links, nodes) {
+      const degree = new Map(nodes.map((node) => [node.id, 0]));
+      links.forEach((link) => {
+        const source = link.source?.id ?? link.source;
+        const target = link.target?.id ?? link.target;
+        degree.set(source, (degree.get(source) || 0) + 1);
+        degree.set(target, (degree.get(target) || 0) + 1);
+      });
+      return degree;
+    }
+
+    function filterIsolatedNodes(nodes, links) {
+      const degree = buildNodeDegree(links, nodes);
+      const connectedIds = new Set(
+        nodes.filter((node) => (degree.get(node.id) ?? 0) > 0).map((node) => node.id),
+      );
+      return {
+        nodes: nodes.filter((node) => connectedIds.has(node.id)),
+        links: links.filter((link) => {
+          const source = link.source?.id ?? link.source;
+          const target = link.target?.id ?? link.target;
+          return connectedIds.has(source) && connectedIds.has(target);
+        }),
+      };
+    }
+
+    function degreeToCmykColor(degree) {
+      if (degree === 1) return '#000000';
+      if (degree <= 4) return '#e6c200';
+      if (degree <= 7) return '#d4007a';
+      return '#00a8e8';
+    }
+
+    function getNodeColor(node) {
+      if (colorMode === 'cmyk') {
+        return degreeToCmykColor(nodeDegree.get(node.id) ?? 0);
+      }
+      return sourceHighlightIds.has(node.id) ? '#555555' : '#000000';
+    }
+
+    function applyNodeColors(graph) {
       if (!graph) return;
-      graph.nodeColor((node) => (
-        sourceHighlightIds.has(node.id) ? '#555555' : '#000000'
-      ));
+      graph.nodeColor((node) => getNodeColor(node));
     }
 
     window.openNoteById = function (noteId) {
@@ -384,8 +482,8 @@
 
     window.highlightChatSources = function (ids) {
       sourceHighlightIds = new Set(ids);
-      applyNodeHighlight(graphRef);
-      applyNodeHighlight(graph2dRef);
+      applyNodeColors(graphRef);
+      applyNodeColors(graph2dRef);
     };
 
     const WIKI_LINK_PATTERN = /\[\[([^\]|#^]+)(?:\|([^\]]*))?(?:#[^\]]*)?(?:\^[^\]]*)?\]\]/g;
@@ -641,7 +739,8 @@
       return sourceId === node.id || targetId === node.id;
     }
 
-    function initGraph(graphData, meta) {
+    function createGraph3D() {
+      const graphData = prepareGraphData3D(rawData);
       graphNodes = graphData.nodes;
       nodeLookup = buildNodeLookup(graphNodes);
 
@@ -685,7 +784,7 @@
         .onNodeClick((node) => openNoteModal(node));
 
       graphRef = Graph;
-      applyNodeHighlight(Graph);
+      applyNodeColors(Graph);
 
       Graph.d3Force('charge', null);
       Graph.d3Force('center', null);
@@ -713,9 +812,35 @@
       fitGraphToView(Graph);
       scheduleLabelVisibilityUpdate();
 
+      return Graph;
+    }
+
+    function ensureGraph3D() {
+      if (!graphRef) {
+        createGraph3D();
+      }
+      return graphRef;
+    }
+
+    function initGraph(meta) {
+      graphNodes = rawData.nodes;
+      nodeLookup = buildNodeLookup(graphNodes);
+
       statsEl.textContent = `${meta.nodeCount} Notizen · ${meta.linkCount} Links`;
       infoPanel.classList.remove('hidden');
       overlay.classList.add('hidden');
+      updateViewToggleButtons();
+      updateColorToggleButtons();
+
+      if (activeView === '2d') {
+        graphEl.classList.add('hidden');
+        graph2dEl.classList.remove('hidden');
+        ensureGraph2D();
+      } else {
+        graphEl.classList.remove('hidden');
+        graph2dEl.classList.add('hidden');
+        ensureGraph3D();
+      }
     }
 
     function apply2DLayoutForces(Graph) {
@@ -736,7 +861,7 @@
     function setGraph2DData() {
       apply2DLayoutForces(graph2dRef);
       graph2dRef.graphData(prepareGraphData2D(rawData));
-      applyNodeHighlight(graph2dRef);
+      applyNodeColors(graph2dRef);
       graph2dRef.d3ReheatSimulation();
       refreshGraph2DSize();
       fitGraphToView(graph2dRef);
@@ -787,6 +912,21 @@
       });
     }
 
+    function updateColorToggleButtons() {
+      colorToggle.querySelectorAll('button[data-color-mode]').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.colorMode === colorMode);
+      });
+      colorLegend.classList.toggle('hidden', colorMode !== 'cmyk');
+    }
+
+    function switchColorMode(mode) {
+      if (mode === colorMode) return;
+      colorMode = mode;
+      applyNodeColors(graphRef);
+      applyNodeColors(graph2dRef);
+      updateColorToggleButtons();
+    }
+
     function switchView(view) {
       if (view === activeView) return;
       activeView = view;
@@ -794,13 +934,15 @@
       if (view === '3d') {
         graphEl.classList.remove('hidden');
         graph2dEl.classList.add('hidden');
-        applyNodeHighlight(graphRef);
+        ensureGraph3D();
+        fitGraphToView(graphRef);
+        applyNodeColors(graphRef);
       } else {
         graphEl.classList.add('hidden');
         graph2dEl.classList.remove('hidden');
         ensureGraph2D();
         fitGraphToView(graph2dRef);
-        applyNodeHighlight(graph2dRef);
+        applyNodeColors(graph2dRef);
       }
 
       updateViewToggleButtons();
@@ -810,6 +952,12 @@
       const btn = event.target.closest('button[data-view]');
       if (!btn) return;
       switchView(btn.dataset.view);
+    });
+
+    colorToggle.addEventListener('click', (event) => {
+      const btn = event.target.closest('button[data-color-mode]');
+      if (!btn) return;
+      switchColorMode(btn.dataset.colorMode);
     });
 
     fetch('./data.json')
@@ -823,15 +971,19 @@
         if (!data.nodes || !data.links) {
           throw new Error('Ungültiges JSON-Format in data.json.');
         }
+        const links = data.links.map((link) => ({ source: link.source, target: link.target }));
+        const filtered = filterIsolatedNodes(data.nodes, links);
         rawData = {
-          nodes: data.nodes,
-          links: data.links.map((link) => ({ source: link.source, target: link.target })),
+          nodes: filtered.nodes,
+          links: filtered.links,
           meta: data.meta,
         };
-        initGraph(prepareGraphData3D(rawData), rawData.meta || {
+        nodeDegree = buildNodeDegree(rawData.links, rawData.nodes);
+        initGraph({
+          ...(rawData.meta || {}),
           nodeCount: rawData.nodes.length,
           linkCount: rawData.links.length,
-          model: 'unbekannt',
+          model: rawData.meta?.model ?? 'unbekannt',
         });
       })
       .catch((error) => {
