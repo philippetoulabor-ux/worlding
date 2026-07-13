@@ -31,7 +31,6 @@
       font-family: sans-serif;
     }
 
-    #graph,
     #graph-2d,
     #graph-sphere {
       width: 100%;
@@ -39,8 +38,7 @@
       position: relative;
     }
 
-    #view-toggle,
-    #color-toggle {
+    #view-toggle {
       display: flex;
       gap: 4px;
       margin-top: 8px;
@@ -340,15 +338,10 @@
     <h1>Worlding</h1>
     <p id="stats">–</p>
     <div id="view-toggle" role="group" aria-label="Ansicht wählen">
-      <button type="button" class="toggle-btn active" data-view="2d">2D</button>
-      <button type="button" class="toggle-btn" data-view="3d">3D</button>
-      <button type="button" class="toggle-btn" data-view="sphere">Kugel</button>
+      <button type="button" class="toggle-btn" data-view="2d">2D</button>
+      <button type="button" class="toggle-btn active" data-view="3d">3D</button>
     </div>
-    <div id="color-toggle" role="group" aria-label="Farbmodus wählen">
-      <button type="button" class="toggle-btn active" data-color-mode="cmyk">CMYK</button>
-      <button type="button" class="toggle-btn" data-color-mode="default">BW</button>
-    </div>
-    <ul id="color-legend" class="hidden">
+    <ul id="color-legend">
       <li class="legend-item">
         <span class="legend-swatch" style="background: #000000"></span>
         1 Link
@@ -377,9 +370,8 @@
     </div>
   </div>
 
-  <div id="graph" class="hidden"></div>
-  <div id="graph-2d"></div>
-  <div id="graph-sphere" class="hidden"></div>
+  <div id="graph-2d" class="hidden"></div>
+  <div id="graph-sphere"></div>
 
   <div id="chat-panel">
     <div id="chat-messages"></div>
@@ -406,24 +398,18 @@
     const noteModalBody = document.getElementById('note-modal-body');
     const noteModalClose = document.getElementById('note-modal-close');
     const noteModalBackdrop = noteModal.querySelector('.note-modal-backdrop');
-    const graphEl = document.getElementById('graph');
     const graph2dEl = document.getElementById('graph-2d');
     const graphSphereEl = document.getElementById('graph-sphere');
     const viewToggle = document.getElementById('view-toggle');
-    const colorToggle = document.getElementById('color-toggle');
-    const colorLegend = document.getElementById('color-legend');
 
     let graphNodes = [];
     let nodeLookup = new Map();
     let nodeDegree = new Map();
-    let graphRef = null;
     let graph2dRef = null;
     let graphSphereRef = null;
     let sphereLabelMeshes = [];
-    let sourceHighlightIds = new Set();
     let rawData = null;
-    let activeView = '2d';
-    let colorMode = 'cmyk';
+    let activeView = '3d';
 
     const TARGET_SPAN = 300;
     const SPHERE_RADIUS = 150;
@@ -466,10 +452,7 @@
     }
 
     function getNodeColor(node) {
-      if (colorMode === 'cmyk') {
-        return degreeToCmykColor(nodeDegree.get(node.id) ?? 0);
-      }
-      return sourceHighlightIds.has(node.id) ? '#555555' : '#000000';
+      return degreeToCmykColor(nodeDegree.get(node.id) ?? 0);
     }
 
     function applyNodeColors(graph) {
@@ -488,7 +471,7 @@
           graph2dRef.zoom(2, 800);
         }
       }
-      if (activeView === 'sphere' && graphSphereRef) {
+      if (activeView === '3d' && graphSphereRef) {
         const gNode = graphSphereRef.graphData().nodes.find((n) => n.id === noteId);
         if (gNode) {
           const dist = Math.max(SPHERE_RADIUS * 2.5, 400);
@@ -504,12 +487,7 @@
       }
     };
 
-    window.highlightChatSources = function (ids) {
-      sourceHighlightIds = new Set(ids);
-      applyNodeColors(graphRef);
-      applyNodeColors(graph2dRef);
-      applyNodeColors(graphSphereRef);
-    };
+    window.highlightChatSources = function () {};
 
     const WIKI_LINK_PATTERN = /\[\[([^\]|#^]+)(?:\|([^\]]*))?(?:#[^\]]*)?(?:\^[^\]]*)?\]\]/g;
 
@@ -688,17 +666,6 @@
       }));
     }
 
-    function prepareGraphData3D(data) {
-      const scale = computeScale(data.nodes);
-      const nodes = data.nodes.map((node) => {
-        const x = node.x * scale;
-        const y = node.y * scale;
-        const z = node.z * scale;
-        return { ...node, x, y, z, fx: x, fy: y, fz: z };
-      });
-      return { nodes, links: cloneLinks(data.links) };
-    }
-
     function prepareGraphData2D(data) {
       const scale = computeScale(data.nodes);
       const nodes = data.nodes.map((node) => ({
@@ -849,27 +816,6 @@
       return hovered ? val * 2 : val;
     }
 
-    function createLabelSprite(node, labelTextHeight, labelOffsetY, radialOutward = false) {
-      const sprite = new SpriteText(node.title);
-      sprite.material.depthWrite = false;
-      sprite.material.transparent = true;
-      if (radialOutward) {
-        sprite.material.depthTest = false;
-        sprite.renderOrder = 10;
-      }
-      sprite.color = '#000000';
-      sprite.textHeight = labelTextHeight;
-      sprite.fontFace = 'sans-serif';
-      sprite.center.y = 0;
-      if (radialOutward) {
-        sprite.position.set(0, 0, 0);
-      } else {
-        sprite.position.y = labelOffsetY;
-      }
-      node.__labelSprite = sprite;
-      return sprite;
-    }
-
     const WORLD_NORTH = new THREE.Vector3(0, 1, 0);
     const _sphereN = new THREE.Vector3();
     const _sphereNorth = new THREE.Vector3();
@@ -967,117 +913,11 @@
       });
     }
 
-    function updateLabelVisibility(Graph, graphData, nearDistance, farDistance, minOpacity) {
-      const camPos = Graph.camera().position;
-      const nodePos = new THREE.Vector3();
-
-      graphData.nodes.forEach((node) => {
-        const sprite = node.__labelSprite;
-        if (!sprite) return;
-
-        nodePos.set(node.x, node.y, node.z);
-        const dist = camPos.distanceTo(nodePos);
-
-        let opacity = 1;
-        if (dist > nearDistance) {
-          const t = Math.min(1, (dist - nearDistance) / (farDistance - nearDistance));
-          opacity = 1 - t * (1 - minOpacity);
-        }
-        opacity = Math.max(minOpacity, Math.min(1, opacity));
-
-        sprite.visible = true;
-        sprite.material.opacity = opacity;
-      });
-    }
-
     function linkTouchesNode(link, node) {
       if (!node) return false;
       const sourceId = link.source.id ?? link.source;
       const targetId = link.target.id ?? link.target;
       return sourceId === node.id || targetId === node.id;
-    }
-
-    function createGraph3D() {
-      const graphData = prepareGraphData3D(rawData);
-      graphNodes = graphData.nodes;
-      nodeLookup = buildNodeLookup(graphNodes);
-
-      const nodeVal = 0.25;
-      const nodeValHover = 0.5;
-      const nodeRelSize = 4;
-      const labelTextHeight = 4;
-      const labelOffsetY = nodeRadius(nodeValHover, nodeRelSize) + labelTextHeight * 0.5 + 1;
-      const labelNearDistance = 360;
-      const labelFarDistance = 540;
-      const labelMinOpacity = 0.25;
-      let hoveredNode = null;
-
-      const Graph = ForceGraph3D()(graphEl)
-        .backgroundColor('#ffffff')
-        .cooldownTicks(1)
-        .graphData(graphData)
-        .nodeThreeObject((node) => createLabelSprite(node, labelTextHeight, labelOffsetY))
-        .nodeThreeObjectExtend(true)
-        .nodeVal(nodeVal)
-        .nodeRelSize(nodeRelSize)
-        .nodeResolution(48)
-        .nodeColor(() => '#000000')
-        .nodeOpacity(1)
-        .linkColor((link) => (
-          linkTouchesNode(link, hoveredNode) ? linkColorHighlight : linkColorDefault
-        ))
-        .linkWidth((link) => (linkTouchesNode(link, hoveredNode) ? 1.2 : 0.6))
-        .linkOpacity(1)
-        .enableNodeDrag(false)
-        .onNodeHover((node) => {
-          hoveredNode = node || null;
-          graphData.nodes.forEach((n) => { n.__hover = false; });
-          if (node) {
-            node.__hover = true;
-          }
-          Graph.nodeVal((n) => (n.__hover ? nodeValHover : nodeVal));
-          Graph.linkColor(Graph.linkColor());
-          Graph.linkWidth(Graph.linkWidth());
-        })
-        .onNodeClick((node) => openNoteModal(node));
-
-      graphRef = Graph;
-      applyNodeColors(Graph);
-
-      Graph.d3Force('charge', null);
-      Graph.d3Force('center', null);
-
-      const linkForce = Graph.d3Force('link');
-      if (linkForce) {
-        linkForce.distance(80).strength(0);
-      }
-
-      let labelVisibilityRaf = null;
-      function scheduleLabelVisibilityUpdate() {
-        if (labelVisibilityRaf) cancelAnimationFrame(labelVisibilityRaf);
-        labelVisibilityRaf = requestAnimationFrame(() => {
-          labelVisibilityRaf = null;
-          updateLabelVisibility(Graph, graphData, labelNearDistance, labelFarDistance, labelMinOpacity);
-        });
-      }
-
-      Graph.controls().addEventListener('change', scheduleLabelVisibilityUpdate);
-
-      const controls = Graph.controls();
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.12;
-
-      fitGraphToView(Graph);
-      scheduleLabelVisibilityUpdate();
-
-      return Graph;
-    }
-
-    function ensureGraph3D() {
-      if (!graphRef) {
-        createGraph3D();
-      }
-      return graphRef;
     }
 
     function initGraph(meta) {
@@ -1088,20 +928,12 @@
       infoPanel.classList.remove('hidden');
       overlay.classList.add('hidden');
       updateViewToggleButtons();
-      updateColorToggleButtons();
 
       if (activeView === '2d') {
-        graphEl.classList.add('hidden');
         graph2dEl.classList.remove('hidden');
         graphSphereEl.classList.add('hidden');
         ensureGraph2D();
-      } else if (activeView === '3d') {
-        graphEl.classList.remove('hidden');
-        graph2dEl.classList.add('hidden');
-        graphSphereEl.classList.add('hidden');
-        ensureGraph3D();
       } else {
-        graphEl.classList.add('hidden');
         graph2dEl.classList.add('hidden');
         graphSphereEl.classList.remove('hidden');
         ensureGraphSphere();
@@ -1319,42 +1151,21 @@
       });
     }
 
-    function updateColorToggleButtons() {
-      colorToggle.querySelectorAll('button[data-color-mode]').forEach((btn) => {
-        btn.classList.toggle('active', btn.dataset.colorMode === colorMode);
-      });
-      colorLegend.classList.toggle('hidden', colorMode !== 'cmyk');
-    }
-
-    function switchColorMode(mode) {
-      if (mode === colorMode) return;
-      colorMode = mode;
-      applyNodeColors(graphRef);
-      applyNodeColors(graph2dRef);
-      applyNodeColors(graphSphereRef);
-      updateColorToggleButtons();
-    }
-
     function switchView(view) {
       if (view === activeView) return;
       activeView = view;
 
-      graphEl.classList.toggle('hidden', view !== '3d');
       graph2dEl.classList.toggle('hidden', view !== '2d');
-      graphSphereEl.classList.toggle('hidden', view !== 'sphere');
+      graphSphereEl.classList.toggle('hidden', view !== '3d');
 
       if (view === '3d') {
-        ensureGraph3D();
-        fitGraphToView(graphRef);
-        applyNodeColors(graphRef);
+        ensureGraphSphere();
+        fitSphereToView(graphSphereRef);
+        applyNodeColors(graphSphereRef);
       } else if (view === '2d') {
         ensureGraph2D();
         fitGraphToView(graph2dRef);
         applyNodeColors(graph2dRef);
-      } else if (view === 'sphere') {
-        ensureGraphSphere();
-        fitSphereToView(graphSphereRef);
-        applyNodeColors(graphSphereRef);
       }
 
       updateViewToggleButtons();
@@ -1364,12 +1175,6 @@
       const btn = event.target.closest('button[data-view]');
       if (!btn) return;
       switchView(btn.dataset.view);
-    });
-
-    colorToggle.addEventListener('click', (event) => {
-      const btn = event.target.closest('button[data-color-mode]');
-      if (!btn) return;
-      switchColorMode(btn.dataset.colorMode);
     });
 
     fetch('./data.json')
