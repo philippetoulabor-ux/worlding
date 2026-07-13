@@ -32,9 +32,11 @@
     }
 
     #graph,
-    #graph-2d {
+    #graph-2d,
+    #graph-sphere {
       width: 100%;
       height: 100%;
+      position: relative;
     }
 
     #view-toggle,
@@ -340,6 +342,7 @@
     <div id="view-toggle" role="group" aria-label="Ansicht wählen">
       <button type="button" class="toggle-btn active" data-view="2d">2D</button>
       <button type="button" class="toggle-btn" data-view="3d">3D</button>
+      <button type="button" class="toggle-btn" data-view="sphere">Kugel</button>
     </div>
     <div id="color-toggle" role="group" aria-label="Farbmodus wählen">
       <button type="button" class="toggle-btn active" data-color-mode="cmyk">CMYK</button>
@@ -376,6 +379,7 @@
 
   <div id="graph" class="hidden"></div>
   <div id="graph-2d"></div>
+  <div id="graph-sphere" class="hidden"></div>
 
   <div id="chat-panel">
     <div id="chat-messages"></div>
@@ -404,6 +408,7 @@
     const noteModalBackdrop = noteModal.querySelector('.note-modal-backdrop');
     const graphEl = document.getElementById('graph');
     const graph2dEl = document.getElementById('graph-2d');
+    const graphSphereEl = document.getElementById('graph-sphere');
     const viewToggle = document.getElementById('view-toggle');
     const colorToggle = document.getElementById('color-toggle');
     const colorLegend = document.getElementById('color-legend');
@@ -413,12 +418,17 @@
     let nodeDegree = new Map();
     let graphRef = null;
     let graph2dRef = null;
+    let graphSphereRef = null;
+    let sphereLabelMeshes = [];
     let sourceHighlightIds = new Set();
     let rawData = null;
     let activeView = '2d';
     let colorMode = 'cmyk';
 
     const TARGET_SPAN = 300;
+    const SPHERE_RADIUS = 150;
+    const NODE_SURFACE_OFFSET = 1.001;
+    const SPHERE_FIT_MARGIN = 1.12;
     const linkColorDefault = 'rgba(0, 0, 0, 0.25)';
     const linkColorHighlight = 'rgba(0, 0, 0, 0.95)';
 
@@ -478,12 +488,27 @@
           graph2dRef.zoom(2, 800);
         }
       }
+      if (activeView === 'sphere' && graphSphereRef) {
+        const gNode = graphSphereRef.graphData().nodes.find((n) => n.id === noteId);
+        if (gNode) {
+          const dist = Math.max(SPHERE_RADIUS * 2.5, 400);
+          const camPos = new THREE.Vector3(gNode.x, gNode.y, gNode.z)
+            .normalize()
+            .multiplyScalar(dist);
+          graphSphereRef.cameraPosition(
+            { x: camPos.x, y: camPos.y, z: camPos.z },
+            { x: 0, y: 0, z: 0 },
+            800,
+          );
+        }
+      }
     };
 
     window.highlightChatSources = function (ids) {
       sourceHighlightIds = new Set(ids);
       applyNodeColors(graphRef);
       applyNodeColors(graph2dRef);
+      applyNodeColors(graphSphereRef);
     };
 
     const WIKI_LINK_PATTERN = /\[\[([^\]|#^]+)(?:\|([^\]]*))?(?:#[^\]]*)?(?:\^[^\]]*)?\]\]/g;
@@ -686,9 +711,111 @@
       return { nodes, links: cloneLinks(data.links) };
     }
 
+    function computeNodeCentroid(nodes) {
+      if (nodes.length === 0) return { cx: 0, cy: 0, cz: 0 };
+      const cx = nodes.reduce((sum, node) => sum + node.x, 0) / nodes.length;
+      const cy = nodes.reduce((sum, node) => sum + node.y, 0) / nodes.length;
+      const cz = nodes.reduce((sum, node) => sum + node.z, 0) / nodes.length;
+      return { cx, cy, cz };
+    }
+
+    function projectToSphere(x, y, z, radius) {
+      const v = new THREE.Vector3(x, y, z);
+      if (v.lengthSq() < 1e-8) v.set(1, 0, 0);
+      v.normalize().multiplyScalar(radius * NODE_SURFACE_OFFSET);
+      return { x: v.x, y: v.y, z: v.z };
+    }
+
+    function prepareGraphDataSphere(data) {
+      const scale = computeScale(data.nodes);
+      const { cx, cy, cz } = computeNodeCentroid(data.nodes);
+      const linkCounts = computeNodeLinkCounts(data.nodes, data.links);
+      const nodes = data.nodes.map((node) => {
+        const projected = projectToSphere(
+          (node.x - cx) * scale,
+          (node.y - cy) * scale,
+          (node.z - cz) * scale,
+          SPHERE_RADIUS,
+        );
+        const { x, y, z } = projected;
+        return {
+          ...node,
+          x,
+          y,
+          z,
+          fx: x,
+          fy: y,
+          fz: z,
+          linkCount: linkCounts.get(node.id) || 0,
+        };
+      });
+      return { nodes, links: cloneLinks(data.links) };
+    }
+
+    const _gcVa = new THREE.Vector3();
+    const _gcVb = new THREE.Vector3();
+    const _gcPt = new THREE.Vector3();
+
+    function greatCirclePoints(start, end, radius, segments = 32) {
+      _gcVa.set(start.x, start.y, start.z).normalize();
+      _gcVb.set(end.x, end.y, end.z).normalize();
+      const angle = _gcVa.angleTo(_gcVb);
+      const sinAngle = Math.sin(angle);
+      const surfaceRadius = radius * NODE_SURFACE_OFFSET;
+      const points = [];
+
+      for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        if (angle < 1e-6) {
+          _gcPt.copy(_gcVa);
+        } else {
+          const a = Math.sin((1 - t) * angle) / sinAngle;
+          const b = Math.sin(t * angle) / sinAngle;
+          _gcPt.set(
+            a * _gcVa.x + b * _gcVb.x,
+            a * _gcVa.y + b * _gcVb.y,
+            a * _gcVa.z + b * _gcVb.z,
+          );
+        }
+        points.push(_gcPt.clone().multiplyScalar(surfaceRadius));
+      }
+      return points;
+    }
+
+    function updateSphereLinkStyles(links, hoveredNode) {
+      links.forEach((link) => {
+        if (!link.__lineMaterial) return;
+        const highlighted = linkTouchesNode(link, hoveredNode);
+        link.__lineMaterial.color.setStyle(
+          highlighted ? linkColorHighlight : linkColorDefault,
+        );
+        link.__lineMaterial.opacity = highlighted ? 1 : 0.85;
+      });
+    }
+
     function fitGraphToView(Graph) {
       requestAnimationFrame(() => {
         Graph.zoomToFit(400, 80);
+      });
+    }
+
+    function fitSphereToView(Graph) {
+      requestAnimationFrame(() => {
+        const camera = Graph.camera();
+        const fitRadius = SPHERE_RADIUS + 8;
+        const aspect = camera.aspect || (graphSphereEl.clientWidth / graphSphereEl.clientHeight) || 1;
+        const vHalfFov = (camera.fov * Math.PI) / 180 / 2;
+        const hHalfFov = Math.atan(Math.tan(vHalfFov) * aspect);
+        const dist = Math.max(
+          fitRadius / Math.tan(vHalfFov),
+          fitRadius / Math.tan(hHalfFov),
+        ) * SPHERE_FIT_MARGIN;
+        _fitSphereCamPos.set(0.12, 0.35, 1).normalize().multiplyScalar(dist);
+        Graph.cameraPosition(
+          { x: _fitSphereCamPos.x, y: _fitSphereCamPos.y, z: _fitSphereCamPos.z },
+          { x: 0, y: 0, z: 0 },
+          400,
+        );
       });
     }
 
@@ -696,17 +823,148 @@
       return Math.cbrt(val) * relSize;
     }
 
-    function createLabelSprite(node, labelTextHeight, labelOffsetY) {
+    function computeNodeLinkCounts(nodes, links) {
+      const counts = new Map(nodes.map((node) => [node.id, 0]));
+      links.forEach((link) => {
+        const sourceId = link.source?.id ?? link.source;
+        const targetId = link.target?.id ?? link.target;
+        if (counts.has(sourceId)) counts.set(sourceId, counts.get(sourceId) + 1);
+        if (counts.has(targetId)) counts.set(targetId, counts.get(targetId) + 1);
+      });
+      return counts;
+    }
+
+    const SPHERE_NODE_VAL_BASE = 0.25;
+
+    function sphereNodeSizeFactor(linkCount) {
+      if (linkCount >= 8) return 2;
+      if (linkCount >= 5) return 1.5;
+      if (linkCount >= 2) return 1;
+      return 0.5;
+    }
+
+    function sphereNodeVal(linkCount, hovered = false) {
+      const factor = sphereNodeSizeFactor(linkCount);
+      const val = SPHERE_NODE_VAL_BASE * factor ** 3;
+      return hovered ? val * 2 : val;
+    }
+
+    function createLabelSprite(node, labelTextHeight, labelOffsetY, radialOutward = false) {
       const sprite = new SpriteText(node.title);
       sprite.material.depthWrite = false;
       sprite.material.transparent = true;
+      if (radialOutward) {
+        sprite.material.depthTest = false;
+        sprite.renderOrder = 10;
+      }
       sprite.color = '#000000';
       sprite.textHeight = labelTextHeight;
       sprite.fontFace = 'sans-serif';
       sprite.center.y = 0;
-      sprite.position.y = labelOffsetY;
+      if (radialOutward) {
+        sprite.position.set(0, 0, 0);
+      } else {
+        sprite.position.y = labelOffsetY;
+      }
       node.__labelSprite = sprite;
       return sprite;
+    }
+
+    const WORLD_NORTH = new THREE.Vector3(0, 1, 0);
+    const _sphereN = new THREE.Vector3();
+    const _sphereNorth = new THREE.Vector3();
+    const _sphereSouth = new THREE.Vector3();
+    const _sphereLabelPos = new THREE.Vector3();
+    const _sphereToCamera = new THREE.Vector3();
+    const _spherePoleRef = new THREE.Vector3(0, 0, 1);
+    const _fitSphereCamPos = new THREE.Vector3(0.12, 0.35, 1);
+
+    function sphereTangentNorth(normal, out) {
+      const ref = Math.abs(normal.y) > 0.92 ? _spherePoleRef : WORLD_NORTH;
+      out.copy(ref).addScaledVector(normal, -ref.dot(normal));
+      if (out.lengthSq() < 1e-8) out.set(1, 0, 0);
+      out.normalize();
+      return out;
+    }
+
+    function computeSphereLabelPosition(nodePos, arcLength, surfaceRadius) {
+      _sphereN.copy(nodePos).normalize();
+      sphereTangentNorth(_sphereN, _sphereNorth);
+      _sphereSouth.copy(_sphereNorth).multiplyScalar(-1);
+      const alpha = arcLength / surfaceRadius;
+      return _sphereLabelPos
+        .copy(_sphereN).multiplyScalar(Math.cos(alpha))
+        .addScaledVector(_sphereSouth, Math.sin(alpha))
+        .normalize()
+        .multiplyScalar(surfaceRadius);
+    }
+
+    function clearSphereLabels(scene) {
+      sphereLabelMeshes.forEach((sprite) => {
+        scene.remove(sprite);
+      });
+      sphereLabelMeshes = [];
+    }
+
+    function buildSphereLabels(scene, graphData, nodeRelSize, labelTextHeight) {
+      clearSphereLabels(scene);
+      graphData.nodes.forEach((node) => {
+        const sprite = new SpriteText(node.title);
+        sprite.color = '#000000';
+        sprite.textHeight = labelTextHeight;
+        sprite.fontFace = 'sans-serif';
+        sprite.material.depthWrite = false;
+        sprite.material.depthTest = false;
+        sprite.material.transparent = true;
+        sprite.renderOrder = 10;
+        node.__sphereLabelSprite = sprite;
+        scene.add(sprite);
+        sphereLabelMeshes.push(sprite);
+      });
+    }
+
+    function updateSphereLabelVisibility(
+      Graph,
+      graphData,
+      labelTextHeight,
+      nodeRelSize,
+      nearDistance,
+      farDistance,
+      minOpacity,
+    ) {
+      const camPos = Graph.camera().position;
+      const nodePos = new THREE.Vector3();
+      const surfaceRadius = SPHERE_RADIUS * NODE_SURFACE_OFFSET;
+
+      graphData.nodes.forEach((node) => {
+        const sprite = node.__sphereLabelSprite;
+        if (!sprite) return;
+
+        nodePos.set(node.x, node.y, node.z);
+        const nodeR = nodeRadius(sphereNodeVal(node.linkCount ?? 0, node.__hover), nodeRelSize);
+        const arcLength = nodeR + labelTextHeight * 0.55 + 0.8;
+
+        computeSphereLabelPosition(nodePos, arcLength, surfaceRadius);
+        sprite.position.copy(_sphereLabelPos);
+
+        _sphereN.copy(_sphereLabelPos).normalize();
+        _sphereToCamera.copy(camPos).sub(_sphereLabelPos).normalize();
+        const facesCamera = _sphereN.dot(_sphereToCamera) > 0;
+
+        let opacity = 0;
+        if (facesCamera) {
+          const dist = camPos.distanceTo(nodePos);
+          opacity = 1;
+          if (dist > nearDistance) {
+            const t = Math.min(1, (dist - nearDistance) / (farDistance - nearDistance));
+            opacity = 1 - t * (1 - minOpacity);
+          }
+          opacity = Math.max(minOpacity, Math.min(1, opacity));
+        }
+
+        sprite.visible = opacity > 0.05;
+        sprite.material.opacity = opacity;
+      });
     }
 
     function updateLabelVisibility(Graph, graphData, nearDistance, farDistance, minOpacity) {
@@ -835,11 +1093,18 @@
       if (activeView === '2d') {
         graphEl.classList.add('hidden');
         graph2dEl.classList.remove('hidden');
+        graphSphereEl.classList.add('hidden');
         ensureGraph2D();
-      } else {
+      } else if (activeView === '3d') {
         graphEl.classList.remove('hidden');
         graph2dEl.classList.add('hidden');
+        graphSphereEl.classList.add('hidden');
         ensureGraph3D();
+      } else {
+        graphEl.classList.add('hidden');
+        graph2dEl.classList.add('hidden');
+        graphSphereEl.classList.remove('hidden');
+        ensureGraphSphere();
       }
     }
 
@@ -906,6 +1171,148 @@
       return graph2dRef;
     }
 
+    function refreshGraphSphereSize() {
+      if (!graphSphereRef) return;
+      graphSphereRef.width(graphSphereEl.clientWidth);
+      graphSphereRef.height(graphSphereEl.clientHeight);
+    }
+
+    function setGraphSphereData() {
+      graphSphereRef._setGraphData(prepareGraphDataSphere(rawData));
+      applyNodeColors(graphSphereRef);
+      refreshGraphSphereSize();
+      fitSphereToView(graphSphereRef);
+    }
+
+    function ensureGraphSphere() {
+      if (!graphSphereRef) {
+        createGraphSphere();
+        setGraphSphereData();
+      } else {
+        refreshGraphSphereSize();
+      }
+      return graphSphereRef;
+    }
+
+    function createGraphSphere() {
+      const nodeRelSize = 4;
+      const labelTextHeight = 4;
+      const labelNearDistance = 360;
+      const labelFarDistance = 540;
+      const labelMinOpacity = 0.25;
+      let hoveredNode = null;
+      let graphData = null;
+
+      const Graph = ForceGraph3D()(graphSphereEl)
+        .backgroundColor('#ffffff')
+        .cooldownTicks(1)
+        .nodeVal((node) => sphereNodeVal(node.linkCount ?? 0, node.__hover))
+        .nodeRelSize(nodeRelSize)
+        .nodeResolution(48)
+        .nodeColor(() => '#000000')
+        .nodeOpacity(1)
+        .linkThreeObject((link) => {
+          const geometry = new THREE.BufferGeometry();
+          const material = new THREE.LineBasicMaterial({
+            color: linkColorDefault,
+            transparent: true,
+            opacity: 0.85,
+          });
+          link.__lineMaterial = material;
+          return new THREE.Line(geometry, material);
+        })
+        .linkThreeObjectExtend(false)
+        .linkPositionUpdate((lineObj, { start, end }) => {
+          const points = greatCirclePoints(start, end, SPHERE_RADIUS);
+          lineObj.geometry.setFromPoints(points);
+          return true;
+        })
+        .enableNodeDrag(false)
+        .onNodeHover((node) => {
+          hoveredNode = node || null;
+          if (graphData) {
+            graphData.nodes.forEach((n) => { n.__hover = false; });
+          }
+          if (node) {
+            node.__hover = true;
+          }
+          Graph.nodeVal((n) => sphereNodeVal(n.linkCount ?? 0, n.__hover));
+          if (graphData) {
+            updateSphereLinkStyles(graphData.links, hoveredNode);
+          }
+        })
+        .onNodeClick((node) => openNoteModal(node));
+
+      graphSphereRef = Graph;
+      applyNodeColors(Graph);
+
+      Graph.d3Force('charge', null);
+      Graph.d3Force('center', null);
+
+      const linkForce = Graph.d3Force('link');
+      if (linkForce) {
+        linkForce.distance(80).strength(0);
+      }
+
+      const scene = Graph.scene();
+      scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.75);
+      dirLight.position.set(200, 300, 200);
+      scene.add(dirLight);
+
+      const sphereMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(SPHERE_RADIUS, 64, 64),
+        new THREE.MeshPhongMaterial({
+          color: 0xaaaaaa,
+          transparent: false,
+          side: THREE.DoubleSide,
+        }),
+      );
+      sphereMesh.renderOrder = 0;
+      scene.add(sphereMesh);
+
+      let labelVisibilityRaf = null;
+      function scheduleLabelVisibilityUpdate() {
+        if (labelVisibilityRaf) cancelAnimationFrame(labelVisibilityRaf);
+        labelVisibilityRaf = requestAnimationFrame(() => {
+          labelVisibilityRaf = null;
+          if (graphData) {
+            updateSphereLabelVisibility(
+              Graph,
+              graphData,
+              labelTextHeight,
+              nodeRelSize,
+              labelNearDistance,
+              labelFarDistance,
+              labelMinOpacity,
+            );
+          }
+        });
+      }
+
+      Graph.controls().addEventListener('change', scheduleLabelVisibilityUpdate);
+      Graph.onEngineTick(scheduleLabelVisibilityUpdate);
+
+      const controls = Graph.controls();
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.12;
+
+      Graph._setGraphData = (data) => {
+        graphData = data;
+        Graph.graphData(data);
+        updateSphereLinkStyles(data.links, hoveredNode);
+        buildSphereLabels(
+          Graph.scene(),
+          data,
+          nodeRelSize,
+          labelTextHeight,
+        );
+        scheduleLabelVisibilityUpdate();
+      };
+
+      return Graph;
+    }
+
     function updateViewToggleButtons() {
       viewToggle.querySelectorAll('button[data-view]').forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.view === activeView);
@@ -924,6 +1331,7 @@
       colorMode = mode;
       applyNodeColors(graphRef);
       applyNodeColors(graph2dRef);
+      applyNodeColors(graphSphereRef);
       updateColorToggleButtons();
     }
 
@@ -931,18 +1339,22 @@
       if (view === activeView) return;
       activeView = view;
 
+      graphEl.classList.toggle('hidden', view !== '3d');
+      graph2dEl.classList.toggle('hidden', view !== '2d');
+      graphSphereEl.classList.toggle('hidden', view !== 'sphere');
+
       if (view === '3d') {
-        graphEl.classList.remove('hidden');
-        graph2dEl.classList.add('hidden');
         ensureGraph3D();
         fitGraphToView(graphRef);
         applyNodeColors(graphRef);
-      } else {
-        graphEl.classList.add('hidden');
-        graph2dEl.classList.remove('hidden');
+      } else if (view === '2d') {
         ensureGraph2D();
         fitGraphToView(graph2dRef);
         applyNodeColors(graph2dRef);
+      } else if (view === 'sphere') {
+        ensureGraphSphere();
+        fitSphereToView(graphSphereRef);
+        applyNodeColors(graphSphereRef);
       }
 
       updateViewToggleButtons();
