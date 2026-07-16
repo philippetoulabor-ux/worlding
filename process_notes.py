@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import re
 import shutil
 import sys
@@ -13,20 +12,12 @@ from pathlib import Path
 from urllib.parse import quote, unquote, urlparse
 
 import numpy as np
-
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
 import umap
 from sentence_transformers import SentenceTransformer
 from sklearn.decomposition import PCA
 
 DEFAULT_MODEL = "paraphrase-multilingual-MiniLM-L12-v2"
-DEFAULT_RAG_MODEL = "text-embedding-3-small"
 DEFAULT_OUTPUT = Path("frontend/data.json")
-DEFAULT_RAG_OUTPUT = Path("frontend/rag_index.json")
 DEFAULT_ASSETS = Path("frontend/assets")
 DEFAULT_VAULT = Path("vault")
 IGNORED_DIRS = {".obsidian", ".trash", ".git", ".cursor"}
@@ -76,22 +67,6 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=32,
         help="Embedding batch size (default: 32)",
-    )
-    parser.add_argument(
-        "--rag-output",
-        type=Path,
-        default=DEFAULT_RAG_OUTPUT,
-        help=f"RAG index JSON path (default: {DEFAULT_RAG_OUTPUT})",
-    )
-    parser.add_argument(
-        "--rag-model",
-        default=DEFAULT_RAG_MODEL,
-        help=f"OpenAI embedding model for RAG (default: {DEFAULT_RAG_MODEL})",
-    )
-    parser.add_argument(
-        "--skip-rag-index",
-        action="store_true",
-        help="Skip OpenAI RAG index generation",
     )
     return parser.parse_args()
 
@@ -368,39 +343,6 @@ def embed_notes(
     return embeddings
 
 
-def embed_texts_for_rag(
-    notes: list[dict], model_name: str
-) -> list[dict]:
-    from openai import OpenAI
-
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        print(
-            "Warning: OPENAI_API_KEY not set — skipping RAG index. "
-            "Set the key or use --skip-rag-index.",
-            file=sys.stderr,
-        )
-        return []
-
-    client = OpenAI(api_key=api_key)
-    texts = [
-        f"{note['title']}\n\n{note['content']}"[:MAX_EMBED_CHARS] for note in notes
-    ]
-
-    print(f"Generating OpenAI RAG embeddings for {len(texts)} notes...")
-    response = client.embeddings.create(input=texts, model=model_name)
-    ordered = sorted(response.data, key=lambda item: item.index)
-
-    return [
-        {
-            "id": note["id"],
-            "title": note["title"],
-            "vector": item.embedding,
-        }
-        for note, item in zip(notes, ordered)
-    ]
-
-
 def reduce_to_3d(embeddings: np.ndarray) -> np.ndarray:
     count = len(embeddings)
 
@@ -493,11 +435,14 @@ def main() -> int:
     notes = scan_vault(vault_path)
     print(f"Found {len(notes)} markdown notes.")
     file_index = build_file_index(vault_path)
-    rag_index: list[dict] = []
 
     if not notes:
         print("No notes found. Writing empty graph.")
         output = build_output([], np.empty((0, 3)), [], args.model)
+        assets_dir = args.assets.expanduser().resolve()
+        if assets_dir.exists():
+            shutil.rmtree(assets_dir)
+        assets_dir.mkdir(parents=True, exist_ok=True)
     else:
         lookup = build_lookup(notes)
         assets_dir = args.assets.expanduser().resolve()
@@ -521,15 +466,6 @@ def main() -> int:
         coords = normalize_coords(reduce_to_3d(embeddings))
         output = build_output(notes, coords, links, args.model)
 
-        if not args.skip_rag_index:
-            rag_index = embed_texts_for_rag(notes, args.rag_model)
-
-    if not notes:
-        assets_dir = args.assets.expanduser().resolve()
-        if assets_dir.exists():
-            shutil.rmtree(assets_dir)
-        assets_dir.mkdir(parents=True, exist_ok=True)
-
     output_path = args.output.expanduser().resolve()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(
@@ -538,13 +474,6 @@ def main() -> int:
 
     print(f"Exported {output['meta']['nodeCount']} nodes and "
           f"{output['meta']['linkCount']} links to {output_path}")
-
-    rag_output_path = args.rag_output.expanduser().resolve()
-    rag_output_path.parent.mkdir(parents=True, exist_ok=True)
-    rag_output_path.write_text(
-        json.dumps(rag_index, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    print(f"Exported {len(rag_index)} RAG vectors to {rag_output_path}")
     return 0
 
 

@@ -2,10 +2,5 @@
   "rewrites": [
     { "source": "/zettelkasten", "destination": "/zettelkasten/frontend/index.html" },
     { "source": "/zettelkasten/(.*)", "destination": "/zettelkasten/frontend/$1" }
-  ],
-  "functions": {
-    "zettelkasten/api/chat.py": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }

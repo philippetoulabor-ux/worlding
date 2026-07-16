@@ -14,7 +14,6 @@
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zettelkasten</title>
-  <link rel="stylesheet" href="chat.css">
   <style>
     * {
       box-sizing: border-box;
@@ -372,15 +371,6 @@
 
   <div id="graph-2d" class="hidden"></div>
   <div id="graph-sphere"></div>
-
-  <div id="chat-panel">
-    <div id="chat-messages"></div>
-    <form id="chat-form">
-      <button id="chat-collapse" type="button" aria-label="Chat einklappen" title="Einklappen">⌄</button>
-      <textarea id="chat-input" rows="1" placeholder="Frage stellen…" maxlength="2000"></textarea>
-      <button id="chat-send" type="submit">Senden</button>
-    </form>
-  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
 
@@ -1207,6 +1197,5 @@
         showError(error.message);
       });
   </script>
-  <script src="chat.js"></script>
 </body>
 </html>
