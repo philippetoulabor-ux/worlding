@@ -35,6 +35,7 @@
       width: 100%;
       height: 100%;
       position: relative;
+      touch-action: none;
     }
 
     #view-toggle {
@@ -773,6 +774,11 @@
           { x: 0, y: 0, z: 0 },
           400,
         );
+        const controls = Graph.controls();
+        if (controls) {
+          controls.target.set(0, 0, 0);
+          controls.update();
+        }
       });
     }
 
@@ -1118,6 +1124,13 @@
       const controls = Graph.controls();
       controls.enableDamping = true;
       controls.dampingFactor = 0.12;
+      // Same on mobile & desktop: orbit + zoom only — no pan/drag of the sphere.
+      controls.enablePan = false;
+      controls.target.set(0, 0, 0);
+      if (controls.touches && THREE.TOUCH) {
+        controls.touches.ONE = THREE.TOUCH.ROTATE;
+        controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+      }
 
       Graph._setGraphData = (data) => {
         graphData = data;

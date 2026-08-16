@@ -1,4 +1,4 @@
-2026-06-25 02:13
+
 
 tags: [[Designsystem]]
 
@@ -11,4 +11,4 @@ tags: [[Designsystem]]
 
 
 ##### Links
-+ 
++ https://www.youtube.com/watch?v=GdGm97dIS9g.  ab min 20:20, designsystemdenken von braun in den 1950/60er Jahren

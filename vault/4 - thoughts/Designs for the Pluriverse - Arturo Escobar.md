@@ -1,4 +1,4 @@
-2026-06-27 18:19
+
 
 tags: [[Systemtheorie]], [[Worlding Systems Theory - Bruce Clarke]]
 

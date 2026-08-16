@@ -1,4 +1,4 @@
-2026-06-24 17:24
+
 
 tags: [[Braun]], [[Dieter Rams für Braun]]
 

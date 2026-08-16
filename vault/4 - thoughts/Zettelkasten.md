@@ -1,4 +1,4 @@
-2026-06-23 18:48
+
 
 tags: [[Systemtheorie]], [[Worlding]]
 

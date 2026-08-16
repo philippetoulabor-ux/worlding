@@ -1,4 +1,4 @@
-2026-06-24 17:26
+
 
 tags: [[Dieter Rams für Braun]]
 

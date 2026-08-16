@@ -1,4 +1,4 @@
-2026-06-25 09:58
+
 
 tags: [[Zettelkasten]], [[Worlding]]
 

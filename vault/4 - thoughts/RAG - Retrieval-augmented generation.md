@@ -1,8 +1,5 @@
 
 
-
-2026-06-23 17:17
-
 tags: [[Agents and LLMs]], [[OS]]
 
 
